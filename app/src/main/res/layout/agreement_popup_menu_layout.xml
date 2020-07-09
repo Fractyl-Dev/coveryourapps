@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/agreementPopupMenuLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="end"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="closeAgreementPopupMenu"
+            android:layout_gravity="bottom"
+            android:background="@android:color/transparent"
+            android:src="@mipmap/ic_launcher_round" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="@android:color/transparent"
+            android:gravity="end"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/agreementLendAnItemButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="4dp"
+                android:background="@drawable/rounded_button"
+                android:drawableStart="@drawable/profile_info"
+                android:drawablePadding="10dp"
+                android:padding="8dp"
+                android:text="@string/agreement_lend_an_item"
+                android:textAllCaps="false"
+                android:onClick="agreementLendAnItemOnClick"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/agreementCashTransactionButton"
+                android:layout_width="wrap_content"
+                android:onClick="agreementCashTransactionOnClick"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="4dp"
+                android:background="@drawable/rounded_button"
+                android:drawableStart="@drawable/profile_info"
+                android:drawablePadding="10dp"
+                android:padding="8dp"
+                android:text="@string/agreement_cash_transaction"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/agreementNewAgreementButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="agreementNewAgreementOnClick"
+                android:layout_gravity="center"
+                android:layout_margin="4dp"
+                android:background="@drawable/rounded_button"
+                android:drawableStart="@drawable/profile_info"
+                android:drawablePadding="10dp"
+                android:padding="8dp"
+                android:text="@string/agreement_new_agreement"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#142467</color>
+    <color name="colorPrimaryDark">#142467</color>
+    <color name="colorAccent">#FFFFFF</color>
+    <color name="menuBackgroundColor">#DCDCDC</color>
+
+    <color name="cashGreen">#7ECB74</color>
+
+    <color name="yourFriendsBackground">#D1D1D1</color>
+</resources>

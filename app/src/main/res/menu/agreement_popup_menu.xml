@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/lendAnItem"
+        android:icon="@mipmap/ic_launcher_round"
+        android:title="@string/agreement_lend_an_item"/>
+    <item android:id="@+id/cashTransaction"
+        android:icon="@mipmap/ic_launcher_round"
+        android:title="@string/agreement_cash_transaction"/>
+    <item android:id="@+id/newAgreement"
+        android:icon="@mipmap/ic_launcher_round"
+        android:title="@string/agreement_new_agreement"/>
+</menu>

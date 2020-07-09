@@ -1,0 +1,91 @@
+<resources>
+    <string name="app_name">Cover Your Apps</string>
+
+    <string name="facebook_app_id">956299844832088</string>
+    <string name="fb_login_protocol_scheme">fb956299844832088</string>
+
+
+    <string name="profile_button_description">Open Profile Menu</string>
+    <string name="drawer_open">Open Drawer</string>
+    <string name="drawer_close">Close Drawer</string>
+
+    <string name="agreements_navigation">Agreements</string>
+    <string name="cash_transactions_navigation">Cash Transactions</string>
+    <string name="lending_navigation">Lend an Item</string>
+
+    <!--Profile Menu-->
+    <string name="default_name">Default Name</string>
+    <string name="default_display_name">\@default-displayname</string>
+    <string name="profile_information">Profile Information</string>
+    <string name="profile_home">Home</string>
+    <string name="profile_friends">Friends</string>
+    <string name="profile_settings">Settings</string>
+    <string name="profile_about">About</string>
+
+    <!--New agreement button and menu-->
+    <string name="floating_button_content_description">Agreement Selection</string>
+    <string name="agreement_lend_an_item">Lend an Item</string>
+    <string name="agreement_cash_transaction">Cash Transaction</string>
+    <string name="agreement_new_agreement">New Agreement</string>
+
+    <!--Sign in menu-->
+    <string name="sign_in">Sign in</string>
+    <string name="age_error">Must be at least 13 years old</string>
+    <string name="enter_your_birthdate">Enter Your Birthdate</string>
+    <string name="terms_of_submit">By pressing \"Submit\" you agree to the terms of service and privacy policy</string>
+    <string name="submit">Submit</string>
+    <string name="or">Or</string>
+    <string name="create_account">Create Account</string>
+    <string name="enter_your_name">Enter Your Name</string>
+    <string name="name_hint">First and Last Name</string>
+    <string name="next">Next</string>
+    <string name="enter_your_email">Enter Your Email</string>
+    <string name="email_hint">Enter Your Email</string>
+    <string name="password_hint">Enter Your Password</string>
+    <string name="enter_your_password">Enter Your Password</string>
+    <string name="name_not_entered">Please enter your name</string>
+    <string name="email_not_entered">Please enter your email</string>
+    <string name="password_not_entered">Please enter your password</string>
+    <string name="password_too_short">Please include at least 8 characters</string>
+    <string name="email_not_valid">Please enter a valid email</string>
+    <string name="name_not_valid">Please enter your first and last name</string>
+    <string name="email_already_in_use">Email already in use</string>
+    <string name="email_sign_in">Email</string>
+
+    <!--Home Fragment-->
+    <string name="pending">Pending</string>
+    <string name="cover_logo">Cover Logo</string>
+    <string name="cover_type_default_text">Cover type default text</string>
+    <string name="status_default_text">Status default text</string>
+    <string name="cover_dropdown_arrow">Cover Dropdown Arrow</string>
+    <string name="cover_sent_title_default_text">Cover sent title default text</string>
+    <string name="cover_people_default_text">Cover people default text</string>
+    <string name="cancel">Cancel</string>
+    <string name="review">Review</string>
+    <string name="remind">Remind</string>
+    <string name="confirmed">Confirmed</string>
+    <string name="expired">Expired</string>
+    <string name="clear">Clear</string>
+
+    <!--Cover Creator-->
+    <string name="add_people">Add People</string>
+    <string name="choose_contract">Choose Contract</string>
+    <string name="search_by_username_hint">Search by Username</string>
+    <string name="invite_friends">Invite Friends</string>
+    <string name="your_friends">Your Friends</string>
+    <string name="friend_name_default_text">Friend name default text</string>
+    <string name="friend_display_name_default_text">Friend Display Name Default Text</string>
+    <string name="friend_add_button">Friend Add Button</string>
+    <string name="selected_recipients">Selected Recipients:</string>
+    <string name="write_your_own_contract">Write Your Own</string>
+    <string name="search_templates_hint">Search Templates</string>
+    <string name="contract_title_default_text">Contract title default text</string>
+    <string name="select">Select</string>
+    <string name="cover_type_contract">Contract</string>
+    <string name="contract_template_overview_title_default_text">Contract Template Overview Title Default Text</string>
+    <string name="continue_text">Continue</string>
+    <string name="contract_template_argument_default_title">Contract Template Default Title</string>
+    <string name="argument_default_name">Argument Default Name</string>
+    <string name="electronic_signature">Electronic Signature:</string>
+
+</resources>
