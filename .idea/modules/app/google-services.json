@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "494959602953",
+    "firebase_url": "https://cover-your-apps.firebaseio.com",
+    "project_id": "cover-your-apps",
+    "storage_bucket": "cover-your-apps.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494959602953:android:d247a47833345a7cd0f7d8",
+        "android_client_info": {
+          "package_name": "com.example.coveryourapps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "494959602953-7gecbubc7q9mkii9ap8t1satukrglqvj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.coveryourapps",
+            "certificate_hash": "bdc0ab476603ba6bc268e326454a9f7e0f29c67f"
+          }
+        },
+        {
+          "client_id": "494959602953-29umt56ih3gbuom91pg801njljp5utt7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2jkFfm4F4H5Kxhq-1HGUtKCxARgi20BU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "494959602953-29umt56ih3gbuom91pg801njljp5utt7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "494959602953-04fb0qsl93arglg4vng1hmq23ue5b07v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fractyldev.Cover-Your-Apps"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
