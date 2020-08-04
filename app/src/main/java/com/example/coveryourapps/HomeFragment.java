@@ -3,6 +3,7 @@ package com.example.coveryourapps;
 //import android.support.v4.fr
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,16 +23,24 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class HomeFragment extends Fragment {
-private MainActivity thisActivity;
+    private MainActivity thisActivity;
     private RecyclerView pendingCoversRecyclerView, confirmedCoversRecyclerView, expiredCoversRecyclerView;
     private ArrayList<Cover> pendingCovers, confirmedCovers, expiredCovers;
 
@@ -52,45 +62,46 @@ private MainActivity thisActivity;
         confirmedCovers = new ArrayList<>();
         expiredCovers = new ArrayList<>();
 
-        for (Cover cover : thisActivity.getAllUserCovers()){
+        updateCoversUI();//Immediately displays last info saved, only updates when different than before
+//        thisActivity.refreshDB();//Checks for new info and updateCoversUI when finished
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        updateCoversUI();
+        super.onResume();
+    }
+
+    public void updateCoversUI() {
+        ArrayList<Cover> newPendingCovers = new ArrayList<>();
+        ArrayList<Cover> newConfirmedCovers = new ArrayList<>();
+        ArrayList<Cover> newExpiredCovers = new ArrayList<>();
+
+        for (Cover cover : DBHandler.getAllUserCovers()) {
             if (cover.getStatus().equals("pending")) {
-                Log.d("**Home Fragment | ", "Cover status pending");
-                pendingCovers.add(cover);
-            }else {
-                Log.d("**Home Fragment | ", "wh");
+                newPendingCovers.add(cover);
+            } else if (cover.getStatus().equals("confirmed")) {
+                newConfirmedCovers.add(cover);
             }
         }
+        //Only update if there is a difference, this allows for updating in the background with nothing happening if nothing is new
+        // || expiredCovers.toString().equals(newExpiredCovers.toString())
+        if (!pendingCovers.toString().equals(newPendingCovers.toString()) || !confirmedCovers.toString().equals(newConfirmedCovers.toString())) {
+            pendingCovers.clear();
+            pendingCovers.addAll(newPendingCovers);
+            confirmedCovers.clear();
+            confirmedCovers.addAll(newConfirmedCovers);
+            expiredCovers.clear();
+            expiredCovers.addAll(newExpiredCovers);
 
-        pendingCoversRecyclerView.setAdapter(new UsersAdapter(pendingCovers));
-        confirmedCoversRecyclerView.setAdapter(new UsersAdapter(confirmedCovers));
-        expiredCoversRecyclerView.setAdapter(new UsersAdapter(expiredCovers));
-
-
-//        ArrayList<String> tempUsersSentTo = new ArrayList<>();
-//        tempUsersSentTo.add("Jake");
-//        tempUsersSentTo.add("Hank");
-//
-//        Cover coverCash = new Cover(80.4, "Cash", "Memo For your birthday", "Note I don't like you", "Sent 4 hours ago", tempUsersSentTo);
-//        //Cover coverWaiver = new Cover("e3rd", "Cash", "Memo For your birthday", "Note I don't like you", "Sent 4 hours ago", tempUsersSentTo);
-//        Cover coverWaiver = new Cover("erre3", "This is the contract, give my machine back", "Waiver", "Memo For your birthday", "Note I don't like you", "Sent 4 hours ago", tempUsersSentTo);
-//        pendingCovers.add(coverCash);
-//        pendingCovers.add(coverWaiver);
-//
-//        confirmedCovers = new ArrayList<>();
-//        confirmedCovers.add(coverWaiver);
-//        confirmedCovers.add(coverWaiver);
-//        confirmedCovers.add(coverCash);
-//
-//        expiredCovers = new ArrayList<>();
-//        expiredCovers.add(coverCash);
-//        expiredCovers.add(coverCash);
-//        expiredCovers.add(coverWaiver);
-
-
-
-
-
-        return view;
+//            pendingCovers = newPendingCovers;
+//            confirmedCovers = newConfirmedCovers;
+//            expiredCovers = newExpiredCovers;
+            pendingCoversRecyclerView.setAdapter(new UsersAdapter(pendingCovers));
+            confirmedCoversRecyclerView.setAdapter(new UsersAdapter(confirmedCovers));
+            expiredCoversRecyclerView.setAdapter(new UsersAdapter(expiredCovers));
+        }
     }
 
     class UsersAdapter extends RecyclerView.Adapter<CoverViewHolder> {
@@ -121,47 +132,112 @@ private MainActivity thisActivity;
     class CoverViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Cover cover;
         private ImageView coverLogo;
-        private TextView coverTypeTextView, coverStatusTextView, coverSentTitleTextView, coverPeopleTextView;
+        private TextView coverTypeTextView, coverTimeAgoTextView, coverSentTitleTextView, coverPeopleTextView;
         private LinearLayout coverHideableContentLinearLayout;
         private Button coverCancelButton, coverReviewButton, coverRemindButton;
+        private View coverCancelSeparator, coverRemindSeparator;
         private ImageButton coverDropdownButton;
+        private boolean isSender;
+
+//        public Cover getCover() {
+//            return this.cover;
+//        }
 
         public CoverViewHolder(ViewGroup container) {
             super(LayoutInflater.from(getContext()).inflate(R.layout.cover_list_item, container, false));
             coverLogo = itemView.findViewById(R.id.coverLogo);
 
             coverTypeTextView = itemView.findViewById(R.id.coverTypeTextView);
-            coverStatusTextView = itemView.findViewById(R.id.coverStatusTextView);
+            coverTimeAgoTextView = itemView.findViewById(R.id.coverTimeAgoTextView);
             coverSentTitleTextView = itemView.findViewById(R.id.coverSentTitleTextView);
             coverPeopleTextView = itemView.findViewById(R.id.coverPeopleTextView);
 
             coverHideableContentLinearLayout = itemView.findViewById(R.id.coverHideableContent);
 
+            coverCancelSeparator = itemView.findViewById(R.id.coverCancelSeparator);
+            coverRemindSeparator = itemView.findViewById(R.id.coverRemindSeparator);
             coverCancelButton = itemView.findViewById(R.id.coverCancelButton);
             coverReviewButton = itemView.findViewById(R.id.coverReviewButton);
             coverRemindButton = itemView.findViewById(R.id.coverRemindButton);
             coverDropdownButton = itemView.findViewById(R.id.coverDropdownButton);
         }
 
-        public void bind(Cover cover) {
+        public void bind(final Cover cover) {
             this.cover = cover;
-            if (cover.getType().equals("contract")) {
-                coverTypeTextView.setText(R.string.cover_type_contract);
+
+            for (Cover iteratedCover : DBHandler.getAllUserCovers()) {
+                if (iteratedCover.equals(cover)) {
+                    if (cover.getSenderID().equals(DBHandler.getCurrentFirebaseUser().getUid())) {
+                        isSender = true;
+                        coverSentTitleTextView.setText(R.string.sent_to);
+                        coverPeopleTextView.setText(cover.getRecipient().getName());
+                    } else {
+                        isSender = false;
+                        coverSentTitleTextView.setText(R.string.received_from);
+                        coverPeopleTextView.setText(cover.getSender().getName());
+                        coverCancelButton.setText(R.string.deny);
+                        coverRemindButton.setText(R.string.accept);
+                    }
+
+                    //If status is confirmed, get rid of some buttons
+                    if (cover.getStatus().equals("confirmed")) {
+                        coverCancelButton.setVisibility(View.GONE);
+                        coverRemindButton.setVisibility(View.GONE);
+                        coverCancelSeparator.setVisibility(View.GONE);
+                        coverRemindSeparator.setVisibility(View.GONE);
+                    }
+                }
             }
-            coverStatusTextView.setText(cover.getStatus());
-            coverSentTitleTextView.setText("Sent to:");
-            //coverPeopleTextView.setText(cover.getUsersInvolved().toString().replace("[", "").replace("]", ""));
+
+            coverTypeTextView.setText(cover.getMemo());
+            coverTimeAgoTextView.setText(calculateTimeFromCreation(cover.getCreatedTime()));
 
             coverCancelButton.setOnClickListener(this);
             coverReviewButton.setOnClickListener(this);
             coverRemindButton.setOnClickListener(this);
             coverDropdownButton.setOnClickListener(this);
 
-            if (cover.getType().equals("Cash")) {
+            if (cover.getCoverType().equals("cash")) {
                 coverLogo.setImageResource(R.drawable.cash_icon_medium);
                 coverLogo.setColorFilter(R.color.colorAccent);
                 coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
             }
+        }
+
+        private String calculateTimeFromCreation(Date creationDate) {
+            long diffInMillies = new Timestamp(System.currentTimeMillis()).getTime() - creationDate.getTime();
+            String unit;
+            long unitAmount;
+            if (TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) > 0) {
+                if (TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) > 1) {
+                    unit = "days";
+                } else {
+                    unit = "day";
+                }
+                unitAmount = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            } else if (TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS) > 0) {
+                if (TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS) > 1) {
+                    unit = "hours";
+                } else {
+                    unit = "hour";
+                }
+                unitAmount = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            } else if (TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS) > 0) {
+                if (TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS) > 1) {
+                    unit = "minutes";
+                } else {
+                    unit = "minute";
+                }
+                unitAmount = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            } else {
+                if (TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS) == 1) {
+                    unit = "second";
+                } else {
+                    unit = "seconds";
+                }
+                unitAmount = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            }
+            return unitAmount + " " + unit + " ago";
         }
 
         @Override
@@ -169,16 +245,38 @@ private MainActivity thisActivity;
             switch (v.getId()) {
                 case R.id.coverCancelButton:
                     Log.d("**Home Fragment | ", "Cover Cancel Button pressed");
+                    cancel();
                     break;
                 case R.id.coverReviewButton:
+                    thisActivity.setReviewCover(cover);
+                    thisActivity.changeFragmentLayover(thisActivity.getReviewCoverFragment(), "reviewCoverFragment", true);
                     Log.d("**HomeFragment | ", "Cover Review Button pressed");
                     break;
                 case R.id.coverRemindButton:
                     Log.d("**HomeFragment | ", "Cover Remind Button pressed");
+                    if (!isSender) {
+                        DBHandler.getDB().collection("covers")
+                                .document(cover.getDocID())
+                                .update("status", "confirmed")
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("**Home Fragment |", "Cover " + cover.getDocID() + " set to confirmed");
+                                        thisActivity.refreshDB();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w("**Home Fragment |", "Cover failed to be set to confirmed");
+                                        Toast.makeText(thisActivity, "An error occurred, please try again later.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
                     break;
                 case R.id.coverDropdownButton:
                     Log.d("**HomeFragment | ", "Cover Dropdown Button pressed");
-                    if (coverHideableContentLinearLayout.getVisibility() == View.VISIBLE){
+                    if (coverHideableContentLinearLayout.getVisibility() == View.VISIBLE) {
                         coverHideableContentLinearLayout.setVisibility(View.GONE);
                         coverDropdownButton.setImageResource(R.drawable.cover_dropdown_arrow);
                     } else {
@@ -187,6 +285,35 @@ private MainActivity thisActivity;
                     }
                     break;
             }
+        }
+
+        public void cancel() {
+            DBHandler.getDB().collection("covers")
+                    .document(this.cover.getDocID())
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("**Home Fragment |", "Cancelled cover deleted successfully");
+                            thisActivity.refreshDB();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w("**Home Fragment |", "Error deleting cancelled cover", e);
+                        }
+                    });
+        }
+
+        private int numberICanReference = 0;
+
+        public int getNumberICanReference() {
+            return numberICanReference;
+        }
+
+        public void setNumberICanReference(int numberICanReference) {
+            this.numberICanReference = numberICanReference;
         }
     }
 

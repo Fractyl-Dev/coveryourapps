@@ -66,6 +66,8 @@
     <string name="confirmed">Confirmed</string>
     <string name="expired">Expired</string>
     <string name="clear">Clear</string>
+    <string name="sent_to">Sent to:</string>
+    <string name="received_from">Received From:</string>
 
     <!--Cover Creator-->
     <string name="add_people">Add People</string>
@@ -87,5 +89,21 @@
     <string name="contract_template_argument_default_title">Contract Template Default Title</string>
     <string name="argument_default_name">Argument Default Name</string>
     <string name="electronic_signature">Electronic Signature:</string>
+    <string name="write_a_contract">Write A Contract</string>
+    <string name="what_would_you_like_your_contract_to_say">What would you like your contract to say?</string>
+    <string name="content">Content:</string>
+    <string name="title">Title:</string>
+    <string name="contract_title">Contract title</string>
+    <string name="contract_review_default_title">Contract Review Default Title</string>
+    <string name="contract_review_default_text">Contract review default text</string>
+    <string name="back">Back</string>
+    <string name="deny">Deny</string>
+    <string name="accept">Accept</string>
+    <string name="cash_transaction">Cash Transaction</string>
+    <string name="cash_amount">Cash Amount</string>
+    <string name="memo">Memo</string>
+    <string name="what_would_you_like_the_memo_to_be">What would you like the memo to be?</string>
+    <string name="cash_review_default_text">Cash Review Default Text</string>
+    <string name="cash_review_body_default_text">Cash Review Body Default Text</string>
 
 </resources>

@@ -6,66 +6,26 @@ import android.widget.ImageView;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
 
 public class Cover {
-    private String coverType, id, recipientID, senderID, memo, notes, status;
-    private ArrayList<String> usersInvolved;
+    private String coverType, id, docID, memo, status, senderID, recipientID, content;//ID is the gay one Apple needs, docID is where firestore id is saved
+    private User sender, recipient;
     private Date createdTime;
-
-    //Cash
-    private Double cashAmount;
-
-
-    //Lending
-    private ImageView lendingImage;
-    private String lendingDueDate;
-
-    //Waivers
-    private String templateID, content;
 
     public Cover() {
         // Default empty constructor required for pulling users from FireStore usersDB
     }
-
-    //Cash Constructor
-    public Cover(Double cashAmount, String type, String memo, String notes, String status, ArrayList<String> usersInvolved) {
-        this.cashAmount = cashAmount;
-        this.coverType = type;
-        this.memo = memo;
-        this.notes = notes;
-        this.status = status;
-        this.usersInvolved = usersInvolved;
-    }
-
-    //Lending Constructor
-    public Cover(ImageView lendingImage, String lendingDueDate, String type, String memo, String notes, String status, ArrayList<String> usersInvolved) {
-        //this.lendingImage = lendingImage;
-        this.lendingDueDate = lendingDueDate;
-        this.coverType = type;
-        this.memo = memo;
-        this.notes = notes;
-        this.status = status;
-        this.usersInvolved = usersInvolved;
-    }
-
-    //Waiver Constructor
-    public Cover(String waiverTemplateID, String waiverContractString, String type, String memo, String notes, String status, ArrayList<String> usersInvolved) {
-        this.templateID = waiverTemplateID;
-        this.content = waiverContractString;
-        this.coverType = type;
-        this.memo = memo;
-        this.notes = notes;
-        this.status = status;
-        this.usersInvolved = usersInvolved;
-    }
-
-
-    public String getType() {
-        return coverType;
-    }
-
-    public void setType(String type) {
-        this.coverType = type;
+    public Cover(Map<String, Object> map){
+        this.content = Objects.requireNonNull(map.get("content")).toString();
+        this.coverType = Objects.requireNonNull(map.get("coverType")).toString();
+        this.createdTime = (Date) map.get("createdTime");
+        this.id = Objects.requireNonNull(map.get("id")).toString();
+        this.memo = Objects.requireNonNull(map.get("memo")).toString();
+        this.recipientID = Objects.requireNonNull(map.get("recipientID")).toString();
+        this.senderID = Objects.requireNonNull(map.get("senderID")).toString();
+        this.status = Objects.requireNonNull(map.get("status")).toString();
     }
 
     public String getMemo() {
@@ -76,14 +36,6 @@ public class Cover {
         this.memo = memo;
     }
 
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -92,61 +44,36 @@ public class Cover {
         this.status = status;
     }
 
-    public ArrayList<String> getUsersInvolved() {
-        return usersInvolved;
+    public User getRecipient() {
+        return recipient;
     }
 
-    public void setUsersInvolved(ArrayList<String> usersInvolved) {
-        this.usersInvolved = usersInvolved;
+    public void setRecipient(User recipient) {
+        this.recipient = recipient;
     }
 
-
-    public Double getCashAmount() {
-        if (cashAmount != null) {
-            return cashAmount;
-        }
-        return 0.0;
+    public User getSender() {
+        return sender;
     }
 
-    public void setCashAmount(Double cashAmount) {
-        this.cashAmount = cashAmount;
+    public void setSender(User sender) {
+        this.sender = sender;
     }
 
-    public ImageView getLendingImage() {
-        return lendingImage;
+    public String getSenderID() {
+        return senderID;
     }
 
-    public void setLendingImage(ImageView lendingImage) {
-        this.lendingImage = lendingImage;
+    public void setSenderID(String senderID) {
+        this.senderID = senderID;
     }
 
-    public String getLendingDueDate() {
-        if (lendingDueDate != null) {
-            return lendingDueDate;
-        }
-        return "";
+    public String getRecipientID() {
+        return recipientID;
     }
 
-    public void setLendingDueDate(String lendingDueDate) {
-        this.lendingDueDate = lendingDueDate;
-    }
-
-    public String getWaiverTemplateID() {
-        if (lendingDueDate != null) {
-            return templateID;
-        }
-        return "";
-    }
-
-    public void setWaiverTemplateID(String waiverTemplateID) {
-        this.templateID = waiverTemplateID;
-    }
-
-    public String getWaiverContractString() {
-        if (lendingDueDate != null) {
-            return content;
-        }
-        return "";
+    public void setRecipientID(String recipientID) {
+        this.recipientID = recipientID;
     }
 
     public void setWaiverContractString(String waiverContractString) {
@@ -169,22 +96,6 @@ public class Cover {
         this.id = id;
     }
 
-    public String getRecipientID() {
-        return recipientID;
-    }
-
-    public void setRecipientID(String recipientID) {
-        this.recipientID = recipientID;
-    }
-
-    public String getSenterID() {
-        return senderID;
-    }
-
-    public void setSenterID(String senterID) {
-        this.senderID = senterID;
-    }
-
     public Date getCreatedTime() {
         return createdTime;
     }
@@ -193,19 +104,36 @@ public class Cover {
         this.createdTime = createdTime;
     }
 
-    public String getTemplateID() {
-        return templateID;
-    }
-
-    public void setTemplateID(String templateID) {
-        this.templateID = templateID;
-    }
-
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getDocID() {
+        return docID;
+    }
+
+    public void setDocID(String docID) {
+        this.docID = docID;
+    }
+
+    @Override
+    public String toString() {
+        return "Cover{" +
+                "coverType='" + coverType + '\'' +
+                ", id='" + id + '\'' +
+                ", docID='" + docID + '\'' +
+                ", memo='" + memo + '\'' +
+                ", status='" + status + '\'' +
+                ", senderID='" + senderID + '\'' +
+                ", recipientID='" + recipientID + '\'' +
+                ", content='" + content + '\'' +
+                ", sender=" + sender +
+                ", recipient=" + recipient +
+                ", createdTime=" + createdTime +
+                '}';
     }
 }

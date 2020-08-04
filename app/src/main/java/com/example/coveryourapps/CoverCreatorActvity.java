@@ -29,26 +29,22 @@ import java.util.Objects;
 
 public class CoverCreatorActvity extends AppCompatActivity implements View.OnClickListener {
 
-    private Fragment chooseRecipientsFragment, chooseContractFragment, contractTemplateOverviewFragment, contractTemplateArgumentFragment;
+    private Fragment chooseRecipientsFragment, cashTransactionFragment, chooseContractFragment, contractTemplateOverviewFragment, contractTemplateArgumentFragment, writeAContractFragment;
     private String displayedFragment;
     private String selectedCover;
-    private ArrayList<String> selectedRecipients;
 
     private ImageButton toolbarBackButton;
     private TextView toolbarTopText;
     private Button toolbarNextButton;
 
+
+    private ArrayList<User> selectedRecipients = new ArrayList<>();
+
+    //Template variables
     private int contractTemplateArgumentsIteration;
     private ArrayList<String> contractTemplateArguments;
     private ArrayList<String> contractTemplateArgumentResponses;
-    private ArrayList<ContractTemplate> contractTemplates;
     private ContractTemplate currentContractTemplate;
-
-    private FirebaseFirestore DB;
-    private User currentUser;
-    private ArrayList<User> allUsers;
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentFirebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +54,11 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
         selectedCover = getIntent().getStringExtra("Selected Cover");
         Log.d("**Cover Creator Activity |", "Agreement Type: " + selectedCover);
         chooseRecipientsFragment = new ChooseRecipientsFragment();
+        cashTransactionFragment = new CashTransactionFragment();
         chooseContractFragment = new ChooseContractFragment();
         contractTemplateOverviewFragment = new ContractTemplateOverviewFragment();
         contractTemplateArgumentFragment = new ContractTemplateArgumentFragment();
+        writeAContractFragment = new WriteAContractFragment();
 
         selectedRecipients = new ArrayList<>();
 
@@ -80,66 +78,10 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
         toolbarNextButton.setOnClickListener(this);
 
 
-        //Setting up database and current user
-        mAuth = FirebaseAuth.getInstance();
-        currentFirebaseUser = mAuth.getCurrentUser();
-
-        allUsers = new ArrayList<>();
-        DB = FirebaseFirestore.getInstance();
-        DB.collection("users")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("**Cover Creator Activity | ", "Users retrieved from usersDB");
-                            for (DocumentSnapshot usersSnapshot : task.getResult()) {
-                                if (usersSnapshot != null) {
-                                    //Log.d("Main Activity | ", documentSnapshot.getId() + " -> " + documentSnapshot.getData());
-                                    User user = usersSnapshot.toObject(User.class);
-                                    allUsers.add(user);
-                                    if (user.getUid().equals(currentFirebaseUser.getUid())) {
-                                        currentUser = user;
-                                        Log.d("**Cover Creator Activity | ", "Current user found from usersDB: " + user.toString() + currentUser.toString());
-                                        Log.d("**Cover Creator Activity | ", "Current user getters " + currentUser.getName() + " " + currentUser.getDisplayName());
-
-
-                                        //Change fragment to choose recipients fragment; done in here to prevent
-                                        //crashing due to function not being complete and returning null
-                                        changeCoverCreatorLayover(chooseRecipientsFragment, "chooseRecipientsFragment");
-                                    }
-                                } else {
-                                    Log.w("**Cover Creator Activity | ", "Users Snapshot returned null");
-                                }
-                            }
-                        } else {
-                            Log.w("**Cover Creator Activity | ", "Error retrieving from DB", task.getException());
-                        }
-                    }
-                });
-
-        contractTemplates = new ArrayList<>();
         contractTemplateArguments = new ArrayList<>();
         contractTemplateArgumentResponses = new ArrayList<>();
         contractTemplateArgumentsIteration = 0;
-        DB.collection("contractTemplates")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("**Cover Creator Activity | ", "Contract templates retrieved from usersDB");
-                            for (DocumentSnapshot templatesSnapshot : task.getResult()) {
-                                if (templatesSnapshot != null) {
-                                    ContractTemplate contractTemplate = templatesSnapshot.toObject(ContractTemplate.class);
-                                    contractTemplates.add(contractTemplate);
-                                }
-                            }
-                        } else {
-                            Log.w("**Cover Creator Activity | ", "Contract template retrieval task not successful");
-                        }
-                    }
-                });
+        changeCoverCreatorLayover(chooseRecipientsFragment, "chooseRecipientsFragment");
     }
 
     //fragmentDescription is an optional string you can use to figure out what fragments are being used
@@ -173,83 +115,32 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
     }
 
     public Fragment getContractTemplateArgumentFragment() {
-        return contractTemplateArgumentFragment;
+        //Doesn't matter if you save anything so just make it new
+        return new ContractTemplateArgumentFragment();
     }
 
     public void setContractTemplateArgumentFragment(Fragment contractTemplateArgumentFragment) {
         this.contractTemplateArgumentFragment = contractTemplateArgumentFragment;
     }
 
-    public FirebaseAuth getmAuth() {
-        return mAuth;
+    public Fragment getWriteAContractFragment() {
+        return writeAContractFragment;
     }
 
-    public void setmAuth(FirebaseAuth mAuth) {
-        this.mAuth = mAuth;
+    public void setWriteAContractFragment(Fragment writeAContractFragment) {
+        this.writeAContractFragment = writeAContractFragment;
     }
 
-    public void refreshmAuth() {
-        setmAuth(FirebaseAuth.getInstance());
-    }
-
-    public void signOutmAuth() {
-        this.mAuth.signOut();
-    }
-
-    public FirebaseUser getCurrentFirebaseUser() {
-        return currentFirebaseUser;
-    }
-
-    public void setCurrentFirebaseUser(FirebaseUser currentFirebaseUser) {
-        this.currentFirebaseUser = currentFirebaseUser;
-    }
-
-    public void refreshCurrentFirebaseUser() {
-        setCurrentFirebaseUser(getmAuth().getCurrentUser());
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public ArrayList<User> getAllUsers() {
-        return allUsers;
-    }
-
-    public void setAllUsers(ArrayList<User> allUsers) {
-        this.allUsers = allUsers;
-    }
-
-    public void addToAllUsers(User user) {
-        allUsers.add(user);
-    }
-
-    public ArrayList<String> getSelectedRecipients() {
+    public ArrayList<User> getSelectedRecipients() {
         return selectedRecipients;
-    }
-
-    public void setSelectedRecipients(ArrayList<String> selectedRecipients) {
-        this.selectedRecipients = selectedRecipients;
     }
 
     public void clearSelectedRecipients() {
         selectedRecipients.clear();
     }
 
-    public void addToSelectedRecipients(String uid) {
-        selectedRecipients.add(uid);
-    }
-
-    public ArrayList<ContractTemplate> getContractTemplates() {
-        return contractTemplates;
-    }
-
-    public void setContractTemplates(ArrayList<ContractTemplate> contractTemplates) {
-        this.contractTemplates = contractTemplates;
+    public void addToSelectedRecipients(User user) {
+        selectedRecipients.add(user);
     }
 
     public ArrayList<String> getContractTemplateArguments() {
@@ -292,6 +183,10 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
         this.currentContractTemplate = currentContractTemplate;
     }
 
+    public void setToolbarTopText(String toolbarTopText) {
+        this.toolbarTopText.setText(toolbarTopText);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -300,15 +195,20 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.toolbarNextButton:
                 if (displayedFragment.equals("chooseRecipientsFragment")) {
-                    if (selectedCover.equals("New Agreement")) {
-                        if (selectedRecipients.size() > 0) {
+                    if (selectedRecipients.size() > 0) {
+                        if (selectedCover.equals("New Agreement")) {
                             toolbarTopText.setText(getString(R.string.choose_contract));
                             toolbarBackButton.setImageResource(R.drawable.back_arrow);
                             toolbarNextButton.setVisibility(View.GONE);
                             changeCoverCreatorLayover(chooseContractFragment, "chooseContractFragment");
-                        } else {
-                            Toast.makeText(this, "Please select at least one recipient", Toast.LENGTH_SHORT).show();
+                        } else if (selectedCover.equals("Cash Transaction")) {
+                            toolbarTopText.setText(R.string.cash_transaction);
+                            toolbarBackButton.setImageResource(R.drawable.back_arrow);
+                            toolbarNextButton.setVisibility(View.GONE);
+                            changeCoverCreatorLayover(cashTransactionFragment, "cashTransactionFragment");
                         }
+                    } else {
+                        Toast.makeText(this, "Please select at least one recipient", Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
@@ -322,14 +222,38 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
 
             Intent nextIntent = new Intent(CoverCreatorActvity.this, MainActivity.class);
             startActivity(nextIntent);
-        } else if (displayedFragment.equals("chooseContractFragment")) {
+        } else if (displayedFragment.equals("chooseContractFragment") || displayedFragment.equals("cashTransactionFragment")) {
             toolbarTopText.setText(getString(R.string.add_people));
             toolbarBackButton.setImageResource(R.drawable.close_icon);
             toolbarNextButton.setVisibility(View.VISIBLE);
             changeCoverCreatorLayover(chooseRecipientsFragment, "chooseRecipientsFragment");
         } else if (displayedFragment.equals("contractTemplateOverviewFragment")) {
+            contractTemplateArgumentResponses.clear();
+            contractTemplateArguments.clear();
             changeCoverCreatorLayover(chooseContractFragment, "chooseContractFragment");
+        } else if (displayedFragment.equals("contractTemplateArgumentFragment")) {
+            if (contractTemplateArgumentsIteration != 0) {
+                contractTemplateArgumentsIteration--;
+                ContractTemplateArgumentFragment.updateUI();//Written this way because updateUI is static
+                //Response isn't removed here, it's removed in updateUI so it can populate it with what you said
+//                if (ContractTemplateArgumentFragment.getSignatureHolder().getVisibility() != View.VISIBLE) {
+//
+//                } else {
+//                    Log.d("**Cover Creator |", "sig visible");
+//                }
+            } else {
+                changeCoverCreatorLayover(contractTemplateOverviewFragment, "contractTemplateOverviewFragment");
+            }
+            Log.d("**Cover Creator |", "Update :" + getContractTemplateArgumentResponses().toString());
+            Log.d("**Cover Creator |", "Update :" + getContractTemplateArguments().toString());
+        } else if (displayedFragment.equals("writeAContractFragment")) {
+            changeCoverCreatorLayover(chooseContractFragment, "chooseContractFragment");
+            toolbarTopText.setText(R.string.choose_contract);
         }
+    }
+
+    public void removeLastFromResponse() {
+        contractTemplateArgumentResponses.remove(contractTemplateArgumentResponses.size() - 1);
     }
 
     //Override phone back button

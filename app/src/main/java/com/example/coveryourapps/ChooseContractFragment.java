@@ -19,31 +19,35 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ChooseContractFragment extends Fragment {
+public class ChooseContractFragment extends Fragment implements View.OnClickListener{
     private RecyclerView templatesRecyclerView;
-    private ArrayList<ContractTemplate> templates;
+    private Button writeYourOwnButton;
     private CoverCreatorActvity thisActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_choose_contract, container, false);
         thisActivity = (CoverCreatorActvity) getActivity();
-
-
         templatesRecyclerView = view.findViewById(R.id.templatesRecyclerView);
         templatesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        writeYourOwnButton = view.findViewById(R.id.writeYourOwnButton);
+        writeYourOwnButton.setOnClickListener(this);
 
-        templates = thisActivity.getContractTemplates();
-
-//        templates.add(new ContractTemplate("Liability Waiver", "If you die it 100% your fault so don't"));
-//        templates.add(new ContractTemplate("Work Contract", "I will work 4 u"));
-//        templates.add(new ContractTemplate("Liability Waiver", "If you die it 100% your fault so don't"));
-
-        templatesRecyclerView.setAdapter(new ChooseContractFragment.TemplatesAdapter(templates));
+        templatesRecyclerView.setAdapter(new ChooseContractFragment.TemplatesAdapter(DBHandler.getAllContractTemplates()));
 
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.writeYourOwnButton){
+            Log.d("**Choose Concract Fragment |", "Wh " + thisActivity.getSelectedRecipients());
+
+            thisActivity.changeCoverCreatorLayover(thisActivity.getWriteAContractFragment(), "writeAContractFragment");
+            thisActivity.setToolbarTopText("Write a Contract");
+        }
     }
 
     class TemplatesAdapter extends RecyclerView.Adapter<ChooseContractFragment.TemplateViewHolder> {
@@ -79,7 +83,6 @@ public class ChooseContractFragment extends Fragment {
 
         public TemplateViewHolder(ViewGroup container) {
             super(LayoutInflater.from(getContext()).inflate(R.layout.choose_contract_list_item, container, false));
-            Log.d("**Choose Contract Fragment |", "Template ID " + templateDocumentID);
             contractTitle = itemView.findViewById(R.id.contractTitle);
             contractSelectButton = itemView.findViewById(R.id.contractSelectButton);
         }

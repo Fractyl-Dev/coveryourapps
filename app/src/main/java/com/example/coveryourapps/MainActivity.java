@@ -1,16 +1,15 @@
 package com.example.coveryourapps;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.drm.DrmStore;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -18,55 +17,38 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
-/*import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;*/
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+    private HomeFragment homeFragment;
+    private Fragment friendsFragment, settingsFragment, aboutFragment, profileInformationFragment, reviewCoverFragment;
+    private String displayedFragment;
     private DrawerLayout drawerLayout;
     private NavigationView profileView;
     private LinearLayout piButtonHolder;
+    private FloatingActionButton floatingActionButton;
     private TextView nameTextView, displayNameTextView;
     private MenuItem profileHome, profileFriends, profileSettings, profileAbout;
 
-
-    private ArrayList<Cover> allUserCovers;
-    private FirebaseFirestore DB;
-    private User currentUser;
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentFirebaseUser;
-
-
+    //Review variables
+    private Cover reviewCover;
     AlertDialog dialog;
 
 
@@ -74,6 +56,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        homeFragment = new HomeFragment();
+        friendsFragment = new FriendsFragment();
+        settingsFragment = new SettingsFragment();
+        aboutFragment = new AboutFragment();
+        profileInformationFragment = new ProfileInformationFragment();
+        reviewCoverFragment = new ReviewCoverFragment();
+
+        floatingActionButton = findViewById(R.id.agreementPopupMenu);
 
         //Top Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -102,82 +92,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         profileSettings = profileMenu.findItem(R.id.profile_settings);
         profileAbout = profileMenu.findItem(R.id.profile_about);
 
+        nameTextView.setText(DBHandler.getCurrentUser().getName());
+        displayNameTextView.setText(DBHandler.getCurrentUser().getDisplayName());
 
-        //Setting up database and current user
-        mAuth = FirebaseAuth.getInstance();
-        currentFirebaseUser = mAuth.getCurrentUser();
-
-        allUserCovers = new ArrayList<>();
-        DB = FirebaseFirestore.getInstance();
-        DB.collection("users")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("**Main Activity | ", "Users retrieved from usersDB");
-                            for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                                if (documentSnapshot != null) {
-                                    //Log.d("Main Activity | ", documentSnapshot.getId() + " -> " + documentSnapshot.getData());
-                                    User user = documentSnapshot.toObject(User.class);
-                                    if (user.getUid().equals(currentFirebaseUser.getUid())) {
-                                        currentUser = user;
-                                        Log.d("**Main Activity | ", "Current user found from usersDB: " + user.toString() + currentUser.toString());
-                                        Log.d("**Main Activity | ", "Current user getters " + currentUser.getName() + " " + currentUser.getDisplayName());
-
-                                        nameTextView.setText(currentUser.getName());
-                                        displayNameTextView.setText(currentUser.getDisplayName());
-
-                                        //Store cover objects in an array from user CoversID string array
-                                        DB.collection("covers")
-                                                .get()
-                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                        if (task.isSuccessful()) {
-                                                            for (DocumentSnapshot coversSnapshot : task.getResult()) {
-                                                                if (coversSnapshot != null) {
-                                                                    Cover cover = coversSnapshot.toObject(Cover.class);
-                                                                    //Temp to add covers while I can't actually add them yet. When deleted covers will be uploaded to database
-                                                                    currentUser.addCover(coversSnapshot.getId());
-
-                                                                    if (getCurrentUser().getCovers().contains(coversSnapshot.getId())){
-                                                                        Log.d("**Main Activity | ", "User cover array contained same id "+coversSnapshot.getId()+ " "+cover.getStatus());
-                                                                        allUserCovers.add(cover);
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            //Fragment displayed on launch, done here so it's only changed when on complete listeners are done
-                                                            if (getSavedInstanceState(savedInstanceState) == null) {
-                                                                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                                                        new HomeFragment()).commit();
-                                                                profileView.setCheckedItem(R.id.profile_home);
-                                                            }
-                                                        }
-                                                    }
-                                                });
-
-                                    }
-                                } else {
-                                    Log.d("**Main Activity | ", "Document Snapshot returned null");
-                                }
-                            }
-                        } else {
-                            Log.w("**Main Activity | ", "Error retrieving from usersDB", task.getException());
-                        }
-                    }
-                });
-
+        //Display first fragment
+        changeFragmentLayover(homeFragment, "homeFragment");
+        profileView.setCheckedItem(R.id.profile_home);
+//        automaticAppRefresh();//If the user wants their messages and stuff to update regularly
 
         //Listener for changing menu item, this allows method to be outside of oncreate
         profileView.setNavigationItemSelectedListener(this);
     }
 
-    //Stupid bc savedInstanceState above needs to be final unless you do this
-    public Bundle getSavedInstanceState(Bundle savedInstanceState) {
-        return savedInstanceState;
+    public void refreshDB() {
+        DBHandler.refreshAllNonUser();
+        onRefreshFinished();
     }
+    private void onRefreshFinished() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (DBHandler.checkIfDoneThinking()) {
+                    Log.d("**Main Activity |", "Handler done thinking, updating home fragment");
+                    homeFragment.updateCoversUI();
+                } else {
+                    onRefreshFinished();
+                }
+            }
+        }, DBHandler.getRefreshDelay());
+    }
+
+    /*public void automaticAppRefresh() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                refreshCoverArray();
+                automaticAppRefresh();
+            }
+        }, 5000);
+    }*/
 
     public void signOutTemp(View view) {
         FirebaseAuth.getInstance().signOut();//Firebase sign out
@@ -208,6 +161,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AccessToken.setCurrentAccessToken(null);*/
 
 
+    }
+
+    public void refreshTemp(View view) {
+        refreshDB();
     }
 
     public void openProfileMenu(View view) {
@@ -241,8 +198,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //This is seperate from onNavigationItemSelected method because it's not a menu item, it's in the nav header
     public void setToProfileInformationFragment(View view) {
         //Change fragment to profile information
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                new ProfileInformationFragment()).commit();
+        changeFragmentLayover(profileInformationFragment, "profileInformationFragment");
         //Uncheck all other menus
         for (int i = 0; i < profileView.getMenu().size(); i++) {
             profileView.getMenu().getItem(i).setChecked(false);
@@ -256,20 +212,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {//When something is pressed in profile menu
         switch (item.getItemId()) {
             case R.id.profile_home:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new HomeFragment()).commit();
+                changeFragmentLayover(homeFragment, "homeFragment");
                 break;
             case R.id.profile_friends:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new FriendsFragment()).commit();
+                changeFragmentLayover(friendsFragment, "friendsFragment");
                 break;
             case R.id.profile_settings:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new SettingsFragment()).commit();
+                changeFragmentLayover(settingsFragment, "settingsFragment");
                 break;
             case R.id.profile_about:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new AboutFragment()).commit();
+                changeFragmentLayover(aboutFragment, "aboutFragment");
                 break;
         }
         item.setChecked(true);
@@ -284,7 +236,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
             drawerLayout.closeDrawer(GravityCompat.END);
         } else {
-            super.onBackPressed();
+            //super.onBackPressed();
+
+            goBack();
+        }
+    }
+
+
+    public void goBack() {
+        if (displayedFragment.equals("homeFragment")) {
+            Intent nextIntent = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(nextIntent);
+        } else if (displayedFragment.equals("reviewCoverFragment")
+                || displayedFragment.equals("profileInformationFragment")
+                || displayedFragment.equals("friendsFragment")
+                || displayedFragment.equals("settingsFragment")
+                || displayedFragment.equals("aboutFragment")) {
+            changeFragmentLayover(getHomeFragment(), "homeFragment", false);
+            profileView.setCheckedItem(R.id.profile_home);
         }
     }
 
@@ -313,8 +282,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.dismiss();
     }
 
+    public void changeFragmentLayover(Fragment fragment, String displayedFragment) {
+        this.displayedFragment = displayedFragment;
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-    public FirebaseFirestore getDB() {
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack if needed
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void changeFragmentLayover(Fragment fragment, String displayedFragment, boolean hideFAB) {
+        changeFragmentLayover(fragment, displayedFragment);
+        if (hideFAB) {
+            floatingActionButton.setVisibility(View.GONE);
+        } else {
+            floatingActionButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /*public FirebaseFirestore getDB() {
         return DB;
     }
 
@@ -352,5 +341,62 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setAllUserCovers(ArrayList<Cover> allUserCovers) {
         this.allUserCovers = allUserCovers;
+    }
+    */
+
+    public Cover getReviewCover() {
+        return reviewCover;
+    }
+
+    public void setReviewCover(Cover reviewCover) {
+        this.reviewCover = reviewCover;
+    }
+
+    public Fragment getHomeFragment() {
+        return homeFragment;
+    }
+
+    public void setHomeFragment(HomeFragment homeFragment) {
+        this.homeFragment = homeFragment;
+    }
+
+    public Fragment getFriendsFragment() {
+        return friendsFragment;
+    }
+
+    public void setFriendsFragment(Fragment friendsFragment) {
+        this.friendsFragment = friendsFragment;
+    }
+
+    public Fragment getSettingsFragment() {
+        return settingsFragment;
+    }
+
+    public void setSettingsFragment(Fragment settingsFragment) {
+        this.settingsFragment = settingsFragment;
+    }
+
+    public Fragment getAboutFragment() {
+        return aboutFragment;
+    }
+
+    public void setAboutFragment(Fragment aboutFragment) {
+        this.aboutFragment = aboutFragment;
+    }
+
+    public Fragment getProfileInformationFragment() {
+        return profileInformationFragment;
+    }
+
+    public void setProfileInformationFragment(Fragment profileInformationFragment) {
+        this.profileInformationFragment = profileInformationFragment;
+    }
+
+    public Fragment getReviewCoverFragment() {
+        return reviewCoverFragment;
+    }
+
+    public void setReviewCoverFragment(Fragment reviewCoverFragment) {
+        this.reviewCoverFragment = reviewCoverFragment;
     }
 }

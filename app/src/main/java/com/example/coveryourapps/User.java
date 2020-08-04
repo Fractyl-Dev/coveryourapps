@@ -6,7 +6,9 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -16,7 +18,7 @@ import java.util.Objects;
 public class User {
     private String uid, name, displayName, birthdate;
     private ArrayList<String> notificationTokens = new ArrayList<>();
-    private ArrayList<String> friendUIDs = new ArrayList<>();//Empty upon user creation
+    private ArrayList<String> friends = new ArrayList<>();//Empty upon user creation
     private ArrayList<String> covers = new ArrayList<>();//Empty upon user creation
     private ArrayList<String> displayNames = new ArrayList<>();//Used to check if a display name is taken when generating display name
 
@@ -49,7 +51,7 @@ public class User {
                             }
 
                             displayName = generateDisplayName(getName());
-                            Log.d("User | Display Name", "Generated Display Name: " + displayName);
+                            Log.d("**User | Display Name", "Generated Display Name: " + displayName);
                         }
                     }
                 });
@@ -66,6 +68,7 @@ public class User {
         suggestedName = suggestedName.replace(" ", "-").toLowerCase();
         String savedSuggestion = suggestedName;
 
+        //If not first name, add dash before number
         if (increment > 0) {
             suggestedName = suggestedName.concat("-" + increment);
         }
@@ -112,12 +115,12 @@ public class User {
         this.birthdate = birthdate;
     }
 
-    public ArrayList<String> getFriendUIDs() {
-        return friendUIDs;
+    public ArrayList<String> getFriends() {
+        return friends;
     }
 
-    public void setFriendUIDs(ArrayList<String> friendUIDs) {
-        this.friendUIDs = friendUIDs;
+    public void setFriends(ArrayList<String> friendUIDs) {
+        this.friends = friendUIDs;
     }
 
     public ArrayList<String> getCovers() {
@@ -148,6 +151,8 @@ public class User {
                 ", displayName='" + displayName + '\'' +
                 ", birthdate='" + birthdate + '\'' +
                 ", notificationTokens=" + notificationTokens +
+                ", friends=" + friends +
+                ", covers=" + covers +
                 '}';
     }
 }

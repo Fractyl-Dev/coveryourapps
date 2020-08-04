@@ -8,15 +8,28 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="start"
         android:layout_marginBottom="50dp"
+        android:gravity="start"
         android:orientation="vertical">
 
-        <Button
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="signOutTemp"
-            android:text="Sign Out Temp" />
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="signOutTemp"
+                android:text="Sign Out Temp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="refreshTemp"
+                android:text="Refresh Temp" />
+
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -58,7 +71,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/expiredRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

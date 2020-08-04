@@ -1,5 +1,6 @@
 package com.example.coveryourapps;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -21,14 +22,20 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
-public class ChooseRecipientsFragment extends Fragment implements View.OnClickListener{
+public class ChooseRecipientsFragment extends Fragment implements View.OnClickListener {
     private EditText usernameSearch;
     private CoverCreatorActvity thisActivity;
     private RecyclerView yourFriendsRecyclerView;
-    private ArrayList<User> yourFriends;
 
     private LinearLayout selectedRecipientsInfo;
     private TextView selectedRecipientsTextView;
@@ -42,13 +49,36 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
         yourFriendsRecyclerView = view.findViewById(R.id.yourFriendsRecyclerView);
         yourFriendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        yourFriends = new ArrayList<>();
 
-        yourFriends.add(thisActivity.getCurrentUser());
-        yourFriends.add(thisActivity.getCurrentUser());
-        yourFriends.add(thisActivity.getCurrentUser());
+//        yourFriends.add(thisActivity.getCurrentUser());
+//        yourFriends.add(thisActivity.getCurrentUser());
+//        yourFriends.add(thisActivity.getCurrentUser());
 
-        yourFriendsRecyclerView.setAdapter(new ChooseRecipientsFragment.UsersAdapter(yourFriends));
+        /*for (final String friendUID : thisActivity.getCurrentUser().getFriends()) {
+            thisActivity.getDB().collection("users")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot userSnapshot : task.getResult()) {
+                                    User potentialFriend = userSnapshot.toObject(User.class);
+                                    if (friendUID.equals(potentialFriend.getUid())) {
+                                        Log.d("Choose Recipients |", "Added potential friend " + potentialFriend.getName());
+                                        yourFriends.add(potentialFriend);
+                                    }
+                                }
+                            } else {
+                                Log.d("Choose Recipients |", "Error getting documents: ", task.getException());
+                            }
+                        }
+                    });
+        }
+
+         */
+        //Populate friends in the UI
+        yourFriendsRecyclerView.setAdapter(new ChooseRecipientsFragment.UsersAdapter(DBHandler.getAllUserFriends()));
+//        yourFriends.add(thisActivity.getCurrentUser().getFriends())
 
 
         usernameSearch = view.findViewById(R.id.usernameSearch);
@@ -74,6 +104,7 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
         // Inflate the layout for this fragment
         return view;
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -82,7 +113,7 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.selectedRecipientsClearButton:
                 thisActivity.clearSelectedRecipients();
                 updateSelectedRecipientsUI();
@@ -146,10 +177,9 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
         @Override
         public void onClick(View v) {
             if (v.getId() == R.id.friendAddButton) {
-
                 //add Friend
-                if (!thisActivity.getSelectedRecipients().contains(friend.getUid())) {
-                    thisActivity.addToSelectedRecipients(friend.getUid());
+                if (!thisActivity.getSelectedRecipients().contains(friend)) {
+                    thisActivity.addToSelectedRecipients(friend);
                     updateSelectedRecipientsUI();
                     Log.d("**Choose Recipients Fragment |", "Added FRIEND UID " + friend.getUid() + " to array. Array is now " + thisActivity.getSelectedRecipients().toString());
                 }
@@ -157,8 +187,38 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
         }
     }
 
-    private void performUsernameSearch(String displayName) {
-        for (User user : thisActivity.getAllUsers()) {
+    private void performUsernameSearch(final String displayName) {
+        DBHandler.getDB().collection("displayNames")
+                .whereEqualTo("name", displayName)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            for (DocumentSnapshot displayNameSnapshot : task.getResult()) {
+//                                String displayName = displayNameSnapshot.toObject(String.class);
+                                DBHandler.getDB().collection("users")
+                                        .document(displayNameSnapshot.getId())
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                if (task.isSuccessful() && task.getResult() != null) {
+                                                    DocumentSnapshot user = task.getResult();
+                                                    if (user.exists()) {
+                                                        thisActivity.addToSelectedRecipients(user.toObject(User.class));
+                                                        updateSelectedRecipientsUI();
+                                                    }
+                                                }
+                                            }
+                                        });
+                            }
+                        } else {
+                            Toast.makeText(thisActivity, "User not found", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+        /*for (User user : thisActivity.getAllUsers()) {
             if (user.getDisplayName().equals(displayName)) {
                 String searchedUserUID = user.getUid();
                 if (!thisActivity.getSelectedRecipients().contains(searchedUserUID)) {
@@ -170,26 +230,32 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
                 }
             }
         }
+
+         */
         usernameSearch.setText("");
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateSelectedRecipientsUI() {
         if (thisActivity.getSelectedRecipients().size() == 0) {
             selectedRecipientsInfo.setVisibility(View.GONE);
         } else {
             selectedRecipientsInfo.setVisibility(View.VISIBLE);
 
-            ArrayList<String> userNamesToDisplay = new ArrayList();
-            for (User user : thisActivity.getAllUsers()) {
+            ArrayList<String> userNamesToDisplay = new ArrayList<>();
+            for (User user : thisActivity.getSelectedRecipients()) {
+                userNamesToDisplay.add(user.getName());
+            }
+            /*for (User user : thisActivity.getAllUsers()) {
                 for (String uid : thisActivity.getSelectedRecipients()) {
                     if (user.getUid().contains(uid)) {
                         User userToDisplay = user;
                         userNamesToDisplay.add(userToDisplay.getName());
                     }
                 }
-            }
+            }*/
             String userNamesToDisplayNoBrackets = userNamesToDisplay.toString().replace("[", "").replace("]", "");
-            selectedRecipientsTextView.setText("Selected Recipients: "+userNamesToDisplayNoBrackets);
+            selectedRecipientsTextView.setText("Selected Recipients: " + userNamesToDisplayNoBrackets);
         }
     }
 }

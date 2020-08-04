@@ -68,11 +68,9 @@ public class ContractTemplateOverviewFragment extends Fragment implements View.O
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.continueButton) {
-            thisActivity.changeCoverCreatorLayover(thisActivity.getContractTemplateArgumentFragment(), "contractTemplateArgumentFragment");
-
-//            if (thisActivity.getContractTemplateArgumentsIteration() < thisActivity.getContractTemplateArguments().size()) {
-//                //Keep asking for arguments
-//            }
+            thisActivity.setContractTemplateArgumentsIteration(0);
+            //This fragment is new so it clears anything you wrote
+            thisActivity.changeCoverCreatorLayover(new ContractTemplateArgumentFragment(), "contractTemplateArgumentFragment");
         }
     }
 }

@@ -58,10 +58,10 @@ class CreateUser {
                                 user.setUid(currentUser != null ? currentUser.getUid() : null);// Fancy if/else
 
                                 doesUserNeedMoreTime();
-
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w("**Create User | User Creation Status", "createUserWithEmail:failure", task.getException());
+                                Toast.makeText(context, "Failed to create a user.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -77,6 +77,7 @@ class CreateUser {
 
             declareFirebaseVariables();
         }
+
         public void createUser() {
             // Signing in was already a success through google, or else this wouldn't be called - safe to assume signed in
             currentUser = mAuth.getCurrentUser();
@@ -97,35 +98,42 @@ class CreateUser {
         updateMap.put("notificationTokens", user.getNotificationTokens());
         updateMap.put("uid", user.getUid());
 
-        usersDB.collection("users").document(user.getUid()).set(updateMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Log.d("**Create User | Database Upload UserStatus", "User was added to database");
+        usersDB.collection("users")
+                .document(user.getUid())
+                .set(updateMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("**Create User | Database Upload UserStatus", "User was added to database");
 
-                    Map<String, Object> updateMap = new HashMap();
-                    updateMap.put("name", user.getDisplayName());
+                            Map<String, Object> updateMap = new HashMap();
+                            updateMap.put("name", user.getDisplayName());
 
-                    displayNamesDB.collection("displayNames").document(user.getUid()).set(updateMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Log.d("**Create User | Database Upload Display Name Status", "Display name was added to database");
-                                SignInBirthdayLayoverFragment.onUserCreated();
-                            } else {
-                                Log.d("**Create User | Database Upload Display Name Status", "Adding display name to database failed", task.getException());
-                            }
+                            //Populate display name
+                            displayNamesDB.collection("displayNames")
+                                    .document(user.getUid())
+                                    .set(updateMap)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d("**Create User | Database Upload Display Name Status", "Display name was added to database");
+                                                SignInBirthdayLayoverFragment.onUserCreated();
+                                            } else {
+                                                Log.d("**Create User | Database Upload Display Name Status", "Adding display name to database failed", task.getException());
+                                            }
+                                        }
+                                    });
+                        } else {
+                            Log.d("**Create User | Database Upload User Status", "Adding user to database failed", task.getException());
                         }
-                    });
-                } else {
-                    Log.d("**Create User | Database Upload User Status", "Adding user to database failed", task.getException());
-                }
-            }
-        });
+                    }
+                });
 
     }
 
-    private static void doesUserNeedMoreTime(){
+    private static void doesUserNeedMoreTime() {
 
         int DELAY_LENGTH = 50;
         new Handler().postDelayed(new Runnable() {

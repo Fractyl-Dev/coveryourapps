@@ -1,23 +1,43 @@
 package com.example.coveryourapps;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
+
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class ContractTemplateArgumentFragment extends Fragment implements View.OnClickListener {
-    private CoverCreatorActvity thisActivity;
-    private TextView contractTemplateArgumentTitle, argumentTextView;
-    private LinearLayout argumentHolder, signatureHolder;
-    private EditText argumentResponse, electronicSignature;
+    private static CoverCreatorActvity thisActivity;
+    private static TextView contractTemplateArgumentTitle, argumentTextView;
+    private static LinearLayout argumentHolder, signatureHolder;
+    private static EditText argumentResponse, electronicSignature;
     private Button continueButton;
 
     @Override
@@ -40,27 +60,132 @@ public class ContractTemplateArgumentFragment extends Fragment implements View.O
         return view;
     }
 
-    public void updateUI() {
+    public static void updateUI() {
         int iteration = thisActivity.getContractTemplateArgumentsIteration();
-        argumentResponse.setText("");
-        contractTemplateArgumentTitle.setText(thisActivity.getCurrentContractTemplate().getTitle());
-        argumentTextView.setText(thisActivity.getContractTemplateArguments().get(iteration));
+        //Fill their response if they went back
+        if (thisActivity.getContractTemplateArgumentResponses().size() == iteration + 1) {
+            argumentResponse.setText(thisActivity.getContractTemplateArgumentResponses().get(iteration));
+            thisActivity.removeLastFromResponse();
+        } else {
+            argumentResponse.setText("");
+        }
+        if (iteration != thisActivity.getContractTemplateArguments().size()) {
+            argumentHolder.setVisibility(View.VISIBLE);
+            signatureHolder.setVisibility(View.GONE);
+            contractTemplateArgumentTitle.setText(thisActivity.getCurrentContractTemplate().getTitle());
+            argumentTextView.setText(thisActivity.getContractTemplateArguments().get(iteration));
+        } else {
+            //closeKeyboard();
+            argumentHolder.setVisibility(View.GONE);
+            signatureHolder.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.continueButton) {
-            thisActivity.addToContractTemplateArgumentResponses(argumentResponse.getText().toString());
-            thisActivity.setContractTemplateArgumentsIteration(thisActivity.getContractTemplateArgumentsIteration() + 1);
             if (thisActivity.getContractTemplateArgumentsIteration() < thisActivity.getContractTemplateArguments().size()) {
+                thisActivity.addToContractTemplateArgumentResponses(argumentResponse.getText().toString());
+                thisActivity.setContractTemplateArgumentsIteration(thisActivity.getContractTemplateArgumentsIteration() + 1);
                 updateUI();
             } else {
-                argumentHolder.setVisibility(View.GONE);
-                signatureHolder.setVisibility(View.VISIBLE);
                 if (!electronicSignature.getText().toString().equals("")) {
-                    Log.d("Contract Template Argument |", "Input data :" +thisActivity.getContractTemplateArguments().toString());
+                    createAndUploadCover(thisActivity.getCurrentContractTemplate().getTitle(), mergeTemplateAndResponses());
+                } else {
+                    Toast.makeText(getContext(), "Please write your electronic signature", Toast.LENGTH_SHORT).show();
                 }
             }
         }
+    }
+
+    public static String mergeTemplateAndResponses() {
+        String currentTemplateText = thisActivity.getCurrentContractTemplate().getText();
+        int responsesAppended = 0;
+
+        boolean replacing = false;
+        StringBuilder argument = new StringBuilder(currentTemplateText);
+        StringBuilder mergedText = new StringBuilder();
+        for (int j = 0; j < currentTemplateText.length(); j++) {
+            char currentChar = currentTemplateText.charAt(j);
+            if (currentChar == '{') {
+                replacing = true;
+            } else if (currentChar == '}') {
+                //Add their response
+                mergedText.append(thisActivity.getContractTemplateArgumentResponses().get(responsesAppended));
+                responsesAppended++;
+                replacing = false;
+            } else if (!replacing) {
+                mergedText.append(currentChar);
+            }
+        }
+        //Log.d("**Contract Template Argument |", "Uploaded Content " + newText.toString());
+
+        return mergedText.toString();
+    }
+
+    //Bs because you can't change things that aren't final in DB on success, but you can do it like this
+    private static boolean alreadySentBack = false;
+
+    private boolean getAlreadySentBack() {
+        return alreadySentBack;
+    }
+
+    private void setAlreadySentBack(boolean bool) {
+        alreadySentBack = bool;
+    }
+
+    public void createAndUploadCover(String memo, String content) {
+        setAlreadySentBack(false);
+        for (User recipient : thisActivity.getSelectedRecipients()) {
+
+            // You're supposed to use Map to put data in a Firestore DB
+            Map<String, Object> updateMap = new HashMap<>();
+            updateMap.put("content", content);
+            updateMap.put("coverType", "contract");
+            updateMap.put("createdTime", new Timestamp(System.currentTimeMillis()));
+            updateMap.put("id", "Useless ID for android");
+            updateMap.put("memo", memo);
+            updateMap.put("recipientID", recipient.getUid());
+            updateMap.put("senderID", DBHandler.getCurrentFirebaseUser().getUid());
+            updateMap.put("status", "pending");
+
+            DBHandler.getDB().collection("covers")
+                    .add(updateMap)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Log.d("**Contract Template Argument |", "Cover added to DB");
+
+                            //Send back to main screen
+                            if (!getAlreadySentBack()) {
+                                Intent nextIntent = new Intent(thisActivity, MainActivity.class);
+                                thisActivity.startActivity(nextIntent);
+                                Toast.makeText(thisActivity, "Sent successfully", Toast.LENGTH_SHORT).show();
+                                setAlreadySentBack(true);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w("**Contract Template Argument |", "Cover failed to be added to DB");
+                            Toast.makeText(thisActivity, "Failed to send", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
+    public static LinearLayout getSignatureHolder() {
+        return signatureHolder;
+    }
+
+    public static void setSignatureHolder(LinearLayout signatureHolder) {
+        ContractTemplateArgumentFragment.signatureHolder = signatureHolder;
+    }
+
+    public static void closeKeyboard() {
+        InputMethodManager imm = (InputMethodManager) thisActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(Objects.requireNonNull(thisActivity.getCurrentFocus()).getWindowToken(), 0);
     }
 }

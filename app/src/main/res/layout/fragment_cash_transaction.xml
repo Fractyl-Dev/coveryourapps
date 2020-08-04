@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:layout_margin="10dp"
     android:fillViewport="true"
-    tools:context=".ContractTemplateOverviewFragment">
+    tools:context=".CashTransactionFragment">
 
     <!--Nested Scroll Views can only have one child so contain it all-->
     <LinearLayout
@@ -14,47 +14,45 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/cover_list_item_shape"
-            android:orientation="vertical"
-            android:padding="10dp">
-
-            <TextView
-                android:id="@+id/contractTemplateArgumentTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/contract_template_argument_default_title"
-                android:textColor="@android:color/black"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/argumentHolder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:visibility="visible"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/argumentTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/argument_default_name"
+                android:text="@string/cash_amount"
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/argumentResponse"
+                android:id="@+id/cashAmountEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:backgroundTint="@color/colorPrimary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:text="@string/memo"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/memoEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorPrimary"
-                android:textSize="14sp" />
+                android:hint="@string/what_would_you_like_the_memo_to_be"
+                android:textSize="14sp"/>
 
         </LinearLayout>
 

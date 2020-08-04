@@ -103,11 +103,11 @@ public class SignInBirthdayLayoverFragment extends Fragment implements View.OnCl
             // Create user through google creation
             thisActivity.refreshmAuth();
             thisActivity.refreshCurrentUser();
-            Log.d("Sign In Birthday | Submit Selection", "Chose to create account with google");
+            Log.d("**Sign In Birthday | Submit Selection", "Chose to create account with google");
             new CreateUser.CreateUser3rdParty(getContext(), new User(thisActivity.getCurrentUser().getDisplayName(), thisActivity.getBirthday())).createUser();
         } else {
             // Create user through email and password
-            Log.d("Sign In Birthday | Submit Selection", "Chose to create account with email");
+            Log.d("**Sign In Birthday | Submit Selection", "Chose to create account with email");
             new CreateUser.CreateUserEmail(getContext(), thisActivity.getEmail(), thisActivity.getPassword(), new User(thisActivity.getName(), thisActivity.getBirthday())).createUser();
 
             //  Not needed
