@@ -195,7 +195,7 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
     }
 
     private void refreshDB() {
-        DBHandler.refreshUserAndAll();
+        DBHandler.refreshUser(true);
         onRefreshFinished();
     }
 

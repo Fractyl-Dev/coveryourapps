@@ -36,6 +36,7 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
     private EditText usernameSearch;
     private CoverCreatorActvity thisActivity;
     private RecyclerView yourFriendsRecyclerView;
+    private ArrayList<User> yourFriends;
 
     private LinearLayout selectedRecipientsInfo;
     private TextView selectedRecipientsTextView;
@@ -49,36 +50,10 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
         yourFriendsRecyclerView = view.findViewById(R.id.yourFriendsRecyclerView);
         yourFriendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-
-//        yourFriends.add(thisActivity.getCurrentUser());
-//        yourFriends.add(thisActivity.getCurrentUser());
-//        yourFriends.add(thisActivity.getCurrentUser());
-
-        /*for (final String friendUID : thisActivity.getCurrentUser().getFriends()) {
-            thisActivity.getDB().collection("users")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot userSnapshot : task.getResult()) {
-                                    User potentialFriend = userSnapshot.toObject(User.class);
-                                    if (friendUID.equals(potentialFriend.getUid())) {
-                                        Log.d("Choose Recipients |", "Added potential friend " + potentialFriend.getName());
-                                        yourFriends.add(potentialFriend);
-                                    }
-                                }
-                            } else {
-                                Log.d("Choose Recipients |", "Error getting documents: ", task.getException());
-                            }
-                        }
-                    });
-        }
-
-         */
         //Populate friends in the UI
-        yourFriendsRecyclerView.setAdapter(new ChooseRecipientsFragment.UsersAdapter(DBHandler.getAllUserFriends()));
-//        yourFriends.add(thisActivity.getCurrentUser().getFriends())
+        yourFriends = new ArrayList<>();
+        updateFriendsUI();
+//        yourFriendsRecyclerView.setAdapter(new ChooseRecipientsFragment.UsersAdapter(yourFriends));
 
 
         usernameSearch = view.findViewById(R.id.usernameSearch);
@@ -109,6 +84,17 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
     public void onResume() {
         super.onResume();
         updateSelectedRecipientsUI();
+    }
+
+    public void updateFriendsUI() {
+        ArrayList<User> newFriends = new ArrayList<>(DBHandler.getAllUserFriends());
+
+        //Only update if there is a difference, this allows for updating in the background with nothing happening if nothing is new
+        if (!yourFriends.toString().equals(newFriends.toString())) {
+            yourFriends.clear();
+            yourFriends.addAll(newFriends);
+            yourFriendsRecyclerView.setAdapter(new ChooseRecipientsFragment.UsersAdapter(yourFriends));
+        }
     }
 
     @Override

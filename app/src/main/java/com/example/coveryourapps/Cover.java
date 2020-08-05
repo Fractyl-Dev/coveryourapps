@@ -17,16 +17,6 @@ public class Cover {
     public Cover() {
         // Default empty constructor required for pulling users from FireStore usersDB
     }
-    public Cover(Map<String, Object> map){
-        this.content = Objects.requireNonNull(map.get("content")).toString();
-        this.coverType = Objects.requireNonNull(map.get("coverType")).toString();
-        this.createdTime = (Date) map.get("createdTime");
-        this.id = Objects.requireNonNull(map.get("id")).toString();
-        this.memo = Objects.requireNonNull(map.get("memo")).toString();
-        this.recipientID = Objects.requireNonNull(map.get("recipientID")).toString();
-        this.senderID = Objects.requireNonNull(map.get("senderID")).toString();
-        this.status = Objects.requireNonNull(map.get("status")).toString();
-    }
 
     public String getMemo() {
         return memo;

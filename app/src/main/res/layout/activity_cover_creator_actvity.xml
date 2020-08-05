@@ -52,10 +52,16 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <FrameLayout
-        android:id="@+id/coverCreatorLayover"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:id="@+id/coverCreatorLayover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
 </LinearLayout>

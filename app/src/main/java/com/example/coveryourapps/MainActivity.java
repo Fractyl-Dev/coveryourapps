@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void refreshDB() {
-        DBHandler.refreshAllNonUser();
+        DBHandler.refreshUser(true);
         refreshLayout.setRefreshing(true);
         onRefreshFinished();
     }

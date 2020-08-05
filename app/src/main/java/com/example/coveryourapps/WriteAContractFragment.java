@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 
+import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,13 +90,16 @@ public class WriteAContractFragment extends Fragment implements View.OnClickList
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
-                            Log.d("**Contract Template Argument |", "Cover added to DB");
+                            Log.d("**Write A Contract |", "Cover added to DB");
+                            //Add Recipient to friends list
+                            if (!DBHandler.getAllUserFriends().contains(recipient)) {
+                                DBHandler.getDB().collection("users").document(DBHandler.getCurrentFirebaseUser().getUid())
+                                        .update("friends", FieldValue.arrayUnion(recipient.getUid()));
+                            }
                             recipientIteration ++;
                             if (recipientIteration == thisActivity.getSelectedRecipients().size()) {
-                                refreshCovers();
+                                refresh();
                             }
-//                            Cover updatedCover = new Cover(updateMap);
-//                            DBHandler.getAllUserCovers().add(updatedCover);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -107,8 +111,8 @@ public class WriteAContractFragment extends Fragment implements View.OnClickList
                     });
         }
     }
-    public void refreshCovers() {
-        DBHandler.refreshCovers();
+    public void refresh() {
+        DBHandler.refreshUser(true);
         onRefreshFinished();
     }
     private void onRefreshFinished() {

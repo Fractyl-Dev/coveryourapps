@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,13 +31,16 @@ import java.util.Objects;
 
 public class CoverCreatorActvity extends AppCompatActivity implements View.OnClickListener {
 
-    private Fragment chooseRecipientsFragment, cashTransactionFragment, chooseContractFragment, contractTemplateOverviewFragment, contractTemplateArgumentFragment, writeAContractFragment;
+    private Fragment cashTransactionFragment, contractTemplateOverviewFragment, contractTemplateArgumentFragment, writeAContractFragment;
+    private ChooseRecipientsFragment chooseRecipientsFragment;
+    private ChooseContractFragment chooseContractFragment;
     private String displayedFragment;
     private String selectedCover;
 
     private ImageButton toolbarBackButton;
     private TextView toolbarTopText;
     private Button toolbarNextButton;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
 
     private ArrayList<User> selectedRecipients = new ArrayList<>();
@@ -66,6 +71,15 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Swipe Refresh Layout
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
+
         //Get rid of title
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
         toolbar.setTitle("");
@@ -83,6 +97,29 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
         contractTemplateArgumentsIteration = 0;
         changeCoverCreatorLayover(chooseRecipientsFragment, "chooseRecipientsFragment");
     }
+    private void refresh() {
+        //Needs to call refresh user to get a refreshed list of friends
+        DBHandler.refreshUser(false);
+        DBHandler.refreshContractTemplates();
+        swipeRefreshLayout.setRefreshing(true);
+        onRefreshFinished();
+    }
+    private void onRefreshFinished() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (DBHandler.checkIfDoneThinking()) {
+                    Log.d("**Cover Creator Activity |", "Handler done thinking, updating friends list");
+                    chooseRecipientsFragment.updateFriendsUI();
+                    chooseContractFragment.updateContractTemplatesUI();
+                    swipeRefreshLayout.setRefreshing(false);
+                } else {
+                    onRefreshFinished();
+                }
+            }
+        }, DBHandler.getRefreshDelay());
+    }
+
 
     //fragmentDescription is an optional string you can use to figure out what fragments are being used
     public void changeCoverCreatorLayover(Fragment fragment, String displayedFragment) {
@@ -102,7 +139,7 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
         return chooseRecipientsFragment;
     }
 
-    public void setChooseRecipientsFragment(Fragment chooseRecipientsFragment) {
+    public void setChooseRecipientsFragment(ChooseRecipientsFragment chooseRecipientsFragment) {
         this.chooseRecipientsFragment = chooseRecipientsFragment;
     }
 

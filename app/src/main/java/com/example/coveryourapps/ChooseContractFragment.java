@@ -23,21 +23,39 @@ public class ChooseContractFragment extends Fragment implements View.OnClickList
     private RecyclerView templatesRecyclerView;
     private Button writeYourOwnButton;
     private CoverCreatorActvity thisActivity;
+    private ArrayList<ContractTemplate> contractTemplates;
 
+
+    View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_choose_contract, container, false);
+        view = inflater.inflate(R.layout.fragment_choose_contract, container, false);
         thisActivity = (CoverCreatorActvity) getActivity();
         templatesRecyclerView = view.findViewById(R.id.templatesRecyclerView);
         templatesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         writeYourOwnButton = view.findViewById(R.id.writeYourOwnButton);
         writeYourOwnButton.setOnClickListener(this);
 
+        contractTemplates = new ArrayList<>();
+        updateContractTemplatesUI();
         templatesRecyclerView.setAdapter(new ChooseContractFragment.TemplatesAdapter(DBHandler.getAllContractTemplates()));
 
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    public void updateContractTemplatesUI() {
+        if (contractTemplates != null) {
+            ArrayList<ContractTemplate> newContractTemplates = new ArrayList<>(DBHandler.getAllContractTemplates());
+
+            //Only update if there is a difference, this allows for updating in the background with nothing happening if nothing is new
+            if (!contractTemplates.toString().equals(newContractTemplates.toString())) {
+                contractTemplates.clear();
+                contractTemplates.addAll(newContractTemplates);
+                templatesRecyclerView.setAdapter(new ChooseContractFragment.TemplatesAdapter(contractTemplates));
+            }
+        }
     }
 
     @Override

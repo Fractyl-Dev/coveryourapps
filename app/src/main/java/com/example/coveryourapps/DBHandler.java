@@ -34,7 +34,7 @@ public class DBHandler extends Application {
     public void onCreate() {
         super.onCreate();
         thisHandler = this;
-        refreshUserAndAll();
+        refreshUser(true);
     }
 
     public static DBHandler getInstance() {
@@ -54,7 +54,7 @@ public class DBHandler extends Application {
 
     private static boolean currentUserFound, sentCoversChecked, receivedCoversChecked, friendsChecked, contractTemplatesChecked;
 
-    public static void refreshUserAndAll() {
+    public static void refreshUser(final boolean refreshAllToo) {
         //Setting up database and current user
         mAuth = FirebaseAuth.getInstance();
         currentFirebaseUser = mAuth.getCurrentUser();
@@ -71,10 +71,13 @@ public class DBHandler extends Application {
                             if (task.isSuccessful() && task.getResult() != null) {
                                 for (DocumentSnapshot userSnapshot : task.getResult()) {
                                     currentUser = userSnapshot.toObject(User.class);
-                                    //Refresh the user's cover array
-                                    refreshCovers();
+
+                                    //Friends list needs to refresh user in order to be accurate, so it calls refreshUser
+                                    if (refreshAllToo) {
+                                        refreshCovers();
+                                        refreshContractTemplates();
+                                    }
                                     refreshFriendsList();
-                                    refreshContractTemplates();
                                 }
                                 currentUserFound = true;
                             } else {
@@ -83,11 +86,6 @@ public class DBHandler extends Application {
                         }
                     });
         }
-    }
-    public static void refreshAllNonUser() {
-        refreshCovers();
-        refreshFriendsList();
-        refreshContractTemplates();
     }
 
     private static int nonFinalSenderIteration = 0;
