@@ -94,8 +94,10 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
             yourFriends.addAll(newFriends);
             if (newFriends.size() != 0) {
                 noFriendsTextView.setVisibility(View.GONE);
+                yourFriendsRecyclerView.setVisibility(View.VISIBLE);
                 yourFriendsRecyclerView.setAdapter(new ChooseRecipientsFragment.UsersAdapter(yourFriends));
             } else {
+                yourFriendsRecyclerView.setVisibility(View.GONE);
                 noFriendsTextView.setVisibility(View.VISIBLE);
             }
         }

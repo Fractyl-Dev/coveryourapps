@@ -92,8 +92,13 @@ public class DBHandler extends Application {
     private static int nonFinalRecipientIteration = 0;
     private static int nonFinalSenderResultSize;
     private static int nonFinalRecipientResultSize;
+    private static ArrayList<Cover> newAllUserCovers;
+
     public static void refreshCovers() {
-        allUserCovers = new ArrayList<>();
+        if (allUserCovers == null) {
+            allUserCovers = new ArrayList<>();
+        }
+        newAllUserCovers = new ArrayList<>();
         sentCoversChecked = false;
         receivedCoversChecked = false;
         nonFinalSenderIteration = 0;
@@ -123,7 +128,9 @@ public class DBHandler extends Application {
                                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                     if (task.isSuccessful() && task.getResult() != null) {
                                                         cover.setRecipient(task.getResult().toObject(User.class));
-                                                        addCoverToAllUserCovers(cover);
+//                                                        addCoverToAllUserCovers(cover);
+//                                                        allUserCovers.add(cover);
+                                                        newAllUserCovers.add(cover);
                                                         nonFinalSenderIteration++;
                                                         if (nonFinalSenderIteration == nonFinalSenderResultSize) {
                                                             Log.d("**DBHandler |", "Sent Covers Checked to true");
@@ -169,7 +176,9 @@ public class DBHandler extends Application {
                                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                     if (task.isSuccessful() && task.getResult() != null) {
                                                         cover.setSender(task.getResult().toObject(User.class));
-                                                        addCoverToAllUserCovers(cover);
+//                                                        addCoverToAllUserCovers(cover);
+//                                                        allUserCovers.add(cover);
+                                                        newAllUserCovers.add(cover);
                                                         nonFinalRecipientIteration++;
                                                         if (nonFinalRecipientIteration == nonFinalRecipientResultSize) {
                                                             Log.d("**DBHandler |", "Received Covers Checked to true");
@@ -206,7 +215,8 @@ public class DBHandler extends Application {
                                 if (task.isSuccessful() && task.getResult() != null) {
                                     for (DocumentSnapshot usersSnapshot : task.getResult()) {
                                         User user = usersSnapshot.toObject(User.class);
-                                        addFriendToAllUserFriends(user);
+//                                        addFriendToAllUserFriends(user);
+                                        allUserFriends.add(user);
                                         if (currentUser.getFriends().size() == allUserFriends.size()) {
                                             Log.d("**DBHandler |", "FriendsChecked to true");
                                             friendsChecked = true;
@@ -237,7 +247,8 @@ public class DBHandler extends Application {
                         if (task.isSuccessful() && task.getResult() != null) {
                             for (DocumentSnapshot contractTemplateSnapshot : task.getResult()) {
                                 ContractTemplate contractTemplate = contractTemplateSnapshot.toObject(ContractTemplate.class);
-                                addContractTemplateToAllContractTemplates(contractTemplate);
+//                                addContractTemplateToAllContractTemplates(contractTemplate);
+                                allContractTemplates.add(contractTemplate);
                             }
                             Log.d("**DBHandler |", "ContractTemplatesChecked to true");
                             contractTemplatesChecked = true;
@@ -248,19 +259,19 @@ public class DBHandler extends Application {
                 });
     }
 
-    private static void addCoverToAllUserCovers(Cover cover) {
-        allUserCovers.add(cover);
-        Log.d("**DBHandler |", "Cover " + cover.toString() + " added to allUserCovers");
-    }
-
-    private static void addFriendToAllUserFriends(User friend) {
-        allUserFriends.add(friend);
-        Log.d("**DBHandler |", "User " + friend.toString() + " added to allUserFriends");
-    }
-    private static void addContractTemplateToAllContractTemplates(ContractTemplate cT) {
-        allContractTemplates.add(cT);
-        Log.d("**DBHandler |", "Contract Template " + cT.toString() + " added to allUserContractTemplates");
-    }
+//    private static void addCoverToAllUserCovers(Cover cover) {
+//        allUserCovers.add(cover);
+//        Log.d("**DBHandler |", "Cover " + cover.toString() + " added to allUserCovers");
+//    }
+//
+//    private static void addFriendToAllUserFriends(User friend) {
+//        allUserFriends.add(friend);
+//        Log.d("**DBHandler |", "User " + friend.toString() + " added to allUserFriends");
+//    }
+//    private static void addContractTemplateToAllContractTemplates(ContractTemplate cT) {
+//        allContractTemplates.add(cT);
+//        Log.d("**DBHandler |", "Contract Template " + cT.toString() + " added to allUserContractTemplates");
+//    }
 
     private static void declareError() {
         Toast.makeText(getInstance(), "We are currently unable to reach the database, please try again later", Toast.LENGTH_SHORT).show();
@@ -275,6 +286,17 @@ public class DBHandler extends Application {
 
     public static boolean checkIfDoneThinking() {
         if (currentUserFound && sentCoversChecked && receivedCoversChecked && friendsChecked && contractTemplatesChecked) {
+            //Check what covers were already there, record their dropdown value
+            for (Cover oldCover : allUserCovers) {
+                for (Cover newCover : newAllUserCovers) {
+                    //Calling toString because even after overriding .equals, it didn't want to work
+                    if (oldCover.toString().equals(newCover.toString())) {
+                        newCover.setDroppedDown(oldCover.isDroppedDown());
+                    }
+                }
+            }
+            allUserCovers.clear();
+            allUserCovers.addAll(newAllUserCovers);
             //Sort the array before declaring that it's done thinking
             Collections.sort(allUserCovers, new Comparator<Cover>() {
                 public int compare(Cover o1, Cover o2) {

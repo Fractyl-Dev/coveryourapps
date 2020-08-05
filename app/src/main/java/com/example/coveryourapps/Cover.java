@@ -13,8 +13,10 @@ public class Cover {
     private String coverType, id, docID, memo, status, senderID, recipientID, content;//ID is the gay one Apple needs, docID is where firestore id is saved
     private User sender, recipient;
     private Date createdTime;
+    private boolean droppedDown;//Used to keep the cover dropped down after refreshing
 
     public Cover() {
+        droppedDown = false;
         // Default empty constructor required for pulling users from FireStore usersDB
     }
 
@@ -108,6 +110,14 @@ public class Cover {
 
     public void setDocID(String docID) {
         this.docID = docID;
+    }
+
+    public boolean isDroppedDown() {
+        return droppedDown;
+    }
+
+    public void setDroppedDown(boolean droppedDown) {
+        this.droppedDown = droppedDown;
     }
 
     @Override

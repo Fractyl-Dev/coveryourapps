@@ -26,7 +26,7 @@ public class ReviewCoverFragment extends Fragment implements View.OnClickListene
             TextView contractReviewText = view.findViewById(R.id.contractReviewText);
 
             contractReviewTitle.setText(thisActivity.getReviewCover().getMemo());
-            contractReviewText.setText(thisActivity.getReviewCover().getContent());
+            contractReviewText.setText(thisActivity.getReviewCover().getContent().replace("\\n", "\n"));//Properly format newlines
         } else if (thisActivity.getReviewCover().getCoverType().equals("cash")) {
             view = inflater.inflate(R.layout.fragment_review_cash, container, false);
             TextView cashReviewText = view.findViewById(R.id.cashReviewText);

@@ -107,5 +107,8 @@
     <string name="cash_review_body_default_text">Cash Review Body Default Text</string>
     <string name="you_don_t_have_any_friends">You don\'t have any friends</string>
     <string name="no_contract_templates_available">No contract templates available</string>
+    <string name="no_pending_covers">No pending covers</string>
+    <string name="no_confirmed_covers">No confirmed covers</string>
+    <string name="no_expired_covers">No expired covers</string>
 
 </resources>

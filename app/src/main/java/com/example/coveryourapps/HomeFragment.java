@@ -43,6 +43,7 @@ public class HomeFragment extends Fragment {
     private MainActivity thisActivity;
     private RecyclerView pendingCoversRecyclerView, confirmedCoversRecyclerView, expiredCoversRecyclerView;
     private ArrayList<Cover> pendingCovers, confirmedCovers, expiredCovers;
+    private TextView pendingNoCoversTextView, confirmedNoCoversTextView, expiredNoCoversTextView;
 
     @Nullable
     @Override
@@ -51,6 +52,10 @@ public class HomeFragment extends Fragment {
         pendingCoversRecyclerView = view.findViewById(R.id.pendingRecyclerView);
         confirmedCoversRecyclerView = view.findViewById(R.id.confirmedRecyclerView);
         expiredCoversRecyclerView = view.findViewById(R.id.expiredRecyclerView);
+
+        pendingNoCoversTextView = view.findViewById(R.id.pendingNoCoversTextView);
+        confirmedNoCoversTextView = view.findViewById(R.id.confirmedNoCoversTextView);
+        expiredNoCoversTextView = view.findViewById(R.id.expiredNoCoversTextView);
 
         pendingCoversRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         confirmedCoversRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -74,33 +79,43 @@ public class HomeFragment extends Fragment {
     }
 
     public void updateCoversUI() {
-        ArrayList<Cover> newPendingCovers = new ArrayList<>();
-        ArrayList<Cover> newConfirmedCovers = new ArrayList<>();
-        ArrayList<Cover> newExpiredCovers = new ArrayList<>();
-
+        pendingCovers.clear();
+        confirmedCovers.clear();
+        expiredCovers.clear();
         for (Cover cover : DBHandler.getAllUserCovers()) {
             if (cover.getStatus().equals("pending")) {
-                newPendingCovers.add(cover);
+                pendingCovers.add(cover);
             } else if (cover.getStatus().equals("confirmed")) {
-                newConfirmedCovers.add(cover);
+                confirmedCovers.add(cover);
+            } else if (cover.getStatus().equals("expired")) {
+                expiredCovers.add(cover);
             }
         }
-        //Only update if there is a difference, this allows for updating in the background with nothing happening if nothing is new
-        // || expiredCovers.toString().equals(newExpiredCovers.toString())
-        if (!pendingCovers.toString().equals(newPendingCovers.toString()) || !confirmedCovers.toString().equals(newConfirmedCovers.toString())) {
-            pendingCovers.clear();
-            pendingCovers.addAll(newPendingCovers);
-            confirmedCovers.clear();
-            confirmedCovers.addAll(newConfirmedCovers);
-            expiredCovers.clear();
-            expiredCovers.addAll(newExpiredCovers);
 
-//            pendingCovers = newPendingCovers;
-//            confirmedCovers = newConfirmedCovers;
-//            expiredCovers = newExpiredCovers;
+        //If it's empty, display no covers text
+        if (pendingCovers.size() != 0) {
+            pendingNoCoversTextView.setVisibility(View.GONE);
+            pendingCoversRecyclerView.setVisibility(View.VISIBLE);
             pendingCoversRecyclerView.setAdapter(new UsersAdapter(pendingCovers));
+        } else {
+            pendingCoversRecyclerView.setVisibility(View.GONE);
+            pendingNoCoversTextView.setVisibility(View.VISIBLE);
+        }
+        if (confirmedCovers.size() != 0) {
+            confirmedNoCoversTextView.setVisibility(View.GONE);
+            confirmedCoversRecyclerView.setVisibility(View.VISIBLE);
             confirmedCoversRecyclerView.setAdapter(new UsersAdapter(confirmedCovers));
+        } else {
+            confirmedCoversRecyclerView.setVisibility(View.GONE);
+            confirmedNoCoversTextView.setVisibility(View.VISIBLE);
+        }
+        if (expiredCovers.size() != 0) {
+            expiredNoCoversTextView.setVisibility(View.GONE);
+            expiredCoversRecyclerView.setVisibility(View.VISIBLE);
             expiredCoversRecyclerView.setAdapter(new UsersAdapter(expiredCovers));
+        } else {
+            expiredCoversRecyclerView.setVisibility(View.GONE);
+            expiredNoCoversTextView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -165,30 +180,35 @@ public class HomeFragment extends Fragment {
         public void bind(final Cover cover) {
             this.cover = cover;
 
-            for (Cover iteratedCover : DBHandler.getAllUserCovers()) {
-                if (iteratedCover.equals(cover)) {
-                    if (cover.getSenderID().equals(DBHandler.getCurrentFirebaseUser().getUid())) {
-                        isSender = true;
-                        coverSentTitleTextView.setText(R.string.sent_to);
-                        coverPeopleTextView.setText(cover.getRecipient().getName());
-                    } else {
-                        isSender = false;
-                        coverSentTitleTextView.setText(R.string.received_from);
-                        coverPeopleTextView.setText(cover.getSender().getName());
-                        coverCancelButton.setText(R.string.deny);
-                        coverRemindButton.setText(R.string.accept);
-                    }
-
-                    //If status is confirmed, get rid of some buttons
-                    if (cover.getStatus().equals("confirmed")) {
-                        coverCancelButton.setVisibility(View.GONE);
-                        coverRemindButton.setVisibility(View.GONE);
-                        coverCancelSeparator.setVisibility(View.GONE);
-                        coverRemindSeparator.setVisibility(View.GONE);
-                    }
-                }
+            if (cover.isDroppedDown()) {
+                coverHideableContentLinearLayout.setVisibility(View.VISIBLE);
+            } else {
+                coverHideableContentLinearLayout.setVisibility(View.GONE);
             }
 
+//            for (Cover iteratedCover : DBHandler.getAllUserCovers()) {
+//                if (iteratedCover.equals(cover)) {
+            if (cover.getSenderID().equals(DBHandler.getCurrentFirebaseUser().getUid())) {
+                isSender = true;
+                coverSentTitleTextView.setText(R.string.sent_to);
+                coverPeopleTextView.setText(cover.getRecipient().getName());
+            } else {
+                isSender = false;
+                coverSentTitleTextView.setText(R.string.received_from);
+                coverPeopleTextView.setText(cover.getSender().getName());
+                coverCancelButton.setText(R.string.deny);
+                coverRemindButton.setText(R.string.accept);
+            }
+
+            //If status is confirmed, get rid of some buttons
+            if (cover.getStatus().equals("confirmed")) {
+                coverCancelButton.setVisibility(View.GONE);
+                coverRemindButton.setVisibility(View.GONE);
+                coverCancelSeparator.setVisibility(View.GONE);
+                coverRemindSeparator.setVisibility(View.GONE);
+            }
+//                }
+//            }
             coverTypeTextView.setText(cover.getMemo());
             coverTimeAgoTextView.setText(calculateTimeFromCreation(cover.getCreatedTime()));
 
@@ -253,7 +273,6 @@ public class HomeFragment extends Fragment {
                     Log.d("**HomeFragment | ", "Cover Review Button pressed");
                     break;
                 case R.id.coverRemindButton:
-                    Log.d("**HomeFragment | ", "Cover Remind Button pressed");
                     if (!isSender) {
                         DBHandler.getDB().collection("covers")
                                 .document(cover.getDocID())
@@ -261,8 +280,8 @@ public class HomeFragment extends Fragment {
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Log.d("**Home Fragment |", "Cover " + cover.getDocID() + " set to confirmed");
-                                        thisActivity.refreshDB();
+                                        Log.d("**Home Fragment |", "Cover " + cover.getDocID() + " set to confirmed in DB");
+                                        thisActivity.refreshCovers();
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -275,17 +294,46 @@ public class HomeFragment extends Fragment {
                     }
                     break;
                 case R.id.coverDropdownButton:
-                    Log.d("**HomeFragment | ", "Cover Dropdown Button pressed");
-                    if (coverHideableContentLinearLayout.getVisibility() == View.VISIBLE) {
-                        coverHideableContentLinearLayout.setVisibility(View.GONE);
-                        coverDropdownButton.setImageResource(R.drawable.cover_dropdown_arrow);
-                    } else {
-                        coverHideableContentLinearLayout.setVisibility(View.VISIBLE);
-                        coverDropdownButton.setImageResource(R.drawable.cover_dropup_arrow);
-                    }
+                    calculateDropdown();
                     break;
             }
         }
+
+        private void calculateDropdown() {
+            if (coverHideableContentLinearLayout.getVisibility() == View.VISIBLE) {
+                dropup();
+            } else {
+                dropdown();
+            }
+        }
+
+        private void dropdown() {
+//            cover.setDroppedDown(true);
+            setDBHandlerCoverDropdown(cover, true);
+            coverHideableContentLinearLayout.setVisibility(View.VISIBLE);
+            coverDropdownButton.setImageResource(R.drawable.cover_dropup_arrow);
+        }
+
+        private void dropup() {
+//            cover.setDroppedDown(false);
+            setDBHandlerCoverDropdown(cover, false);
+            coverHideableContentLinearLayout.setVisibility(View.GONE);
+            coverDropdownButton.setImageResource(R.drawable.cover_dropdown_arrow);
+        }
+
+        private void setDBHandlerCoverDropdown(Cover cover, boolean droppedDown) {
+            for (Cover dbCover : DBHandler.getAllUserCovers()) {
+                if (cover.equals(dbCover)) {
+                    dbCover.setDroppedDown(droppedDown);
+                    Log.e("**HomeFragment |", "Cover " + dbCover.getMemo() + " dropped down? " + dbCover.isDroppedDown());
+
+                }
+            }
+            for (Cover newd : DBHandler.getAllUserCovers()) {
+                Log.e("**HomeFragment |     neeeee", "Cover " + newd.getMemo() + " dropped down? " + newd.isDroppedDown());
+            }
+        }
+
 
         public void cancel() {
             DBHandler.getDB().collection("covers")
@@ -295,7 +343,7 @@ public class HomeFragment extends Fragment {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d("**Home Fragment |", "Cancelled cover deleted successfully");
-                            thisActivity.refreshDB();
+                            thisActivity.refreshCovers();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {

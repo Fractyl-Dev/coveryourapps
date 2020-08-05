@@ -57,8 +57,10 @@ public class ChooseContractFragment extends Fragment implements View.OnClickList
                 contractTemplates.addAll(newContractTemplates);
                 if (contractTemplates.size() != 0) {
                     noContractTemplatesTextView.setVisibility(View.GONE);
+                    templatesRecyclerView.setVisibility(View.VISIBLE);
                     templatesRecyclerView.setAdapter(new ChooseContractFragment.TemplatesAdapter(contractTemplates));
                 } else {
+                    templatesRecyclerView.setVisibility(View.GONE);
                     noContractTemplatesTextView.setVisibility(View.VISIBLE);
                 }
             }
