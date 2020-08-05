@@ -8,6 +8,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FloatingActionButton floatingActionButton;
     private TextView nameTextView, displayNameTextView;
     private MenuItem profileHome, profileFriends, profileSettings, profileAbout;
+    private SwipeRefreshLayout refreshLayout;
 
     //Review variables
     private Cover reviewCover;
@@ -95,6 +97,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         nameTextView.setText(DBHandler.getCurrentUser().getName());
         displayNameTextView.setText(DBHandler.getCurrentUser().getDisplayName());
 
+        //Refresh Layout
+        refreshLayout = findViewById(R.id.swipeRefreshLayout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshCovers();
+            }
+        });
         //Display first fragment
         changeFragmentLayover(homeFragment, "homeFragment");
         profileView.setCheckedItem(R.id.profile_home);
@@ -106,6 +116,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void refreshDB() {
         DBHandler.refreshAllNonUser();
+        refreshLayout.setRefreshing(true);
+        onRefreshFinished();
+    }
+    public void refreshCovers() {
+        DBHandler.refreshCovers();
+        refreshLayout.setRefreshing(true);
         onRefreshFinished();
     }
     private void onRefreshFinished() {
@@ -115,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (DBHandler.checkIfDoneThinking()) {
                     Log.d("**Main Activity |", "Handler done thinking, updating home fragment");
                     homeFragment.updateCoversUI();
+                    refreshLayout.setRefreshing(false);
                 } else {
                     onRefreshFinished();
                 }
@@ -162,11 +179,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     }
-
-    public void refreshTemp(View view) {
-        refreshDB();
-    }
-
     public void openProfileMenu(View view) {
         drawerLayout.openDrawer(GravityCompat.END);
     }

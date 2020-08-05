@@ -25,9 +25,6 @@ public class LoginActivity extends AppCompatActivity {
     private String name, email, password, birthday;
     private boolean signingInWithEmail;
 
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,9 +37,6 @@ public class LoginActivity extends AppCompatActivity {
         signInBirthdayLayoverFragment = new SignInBirthdayLayoverFragment();
 
         signingInWithEmail = false;
-
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
 
         changeLoginLayover(signInLayoverFragment);
     }
@@ -65,34 +59,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public void setSigningInWithEmail(boolean signingInWithEmail) {
         this.signingInWithEmail = signingInWithEmail;
-    }
-
-    public FirebaseAuth getmAuth() {
-        return mAuth;
-    }
-
-    public void setmAuth(FirebaseAuth mAuth) {
-        this.mAuth = mAuth;
-    }
-
-    public void refreshmAuth() {
-        setmAuth(FirebaseAuth.getInstance());
-    }
-
-    public void signOutmAuth() {
-        this.mAuth.signOut();
-    }
-
-    public FirebaseUser getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(FirebaseUser currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public void refreshCurrentUser() {
-        setCurrentUser(getmAuth().getCurrentUser());
     }
 
     public Fragment getSignInLayoverFragment() {

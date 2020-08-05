@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 
+import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,7 +51,6 @@ import java.util.concurrent.Executor;
 public class SignInLayoverFragment extends Fragment implements View.OnClickListener {
 
     LoginActivity thisActivity;
-    private FirebaseAuth mAuth;
 
     // Google Sign In
     private GoogleSignInClient mGoogleSignInClient;
@@ -89,8 +89,6 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-
-        mAuth = thisActivity.getmAuth();
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(Objects.requireNonNull(getActivity()), gso);
@@ -171,7 +169,7 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential)
+        FirebaseAuth.getInstance().signInWithCredential(credential)
                 .addOnCompleteListener(Objects.requireNonNull(getActivity()), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -184,8 +182,7 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
                                 thisActivity.changeLoginLayover(thisActivity.getSignInBirthdayLayoverFragment());
                             } else {
                                 Log.d("**Sign In Layover | Determine if new user", "Not a new user");
-                                Intent nextIntent = new Intent(getActivity(), MainActivity.class);
-                                startActivity(nextIntent);
+                                refreshDB();
                             }
 
                         } else {
@@ -196,6 +193,27 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
                     }
                 });
     }
+
+    private void refreshDB() {
+        DBHandler.refreshUserAndAll();
+        onRefreshFinished();
+    }
+
+    private void onRefreshFinished() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (DBHandler.checkIfDoneThinking()) {
+                    Log.d("**SignInLayoverFragment |", "DB Updated with signed in user, sending to main activity");
+                    Intent nextIntent = new Intent(getActivity(), MainActivity.class);
+                    startActivity(nextIntent);
+                } else {
+                    onRefreshFinished();
+                }
+            }
+        }, DBHandler.getRefreshDelay());
+    }
+
 
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d("**Sign In Facebook", "handleFacebookAccessToken:" + token);
@@ -246,7 +264,7 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
 
     private void createAccount() {
         // Sign out of everything  because they're going in with email
-        thisActivity.signOutmAuth();//Firebase sign out
+        FirebaseAuth.getInstance().signOut();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -264,7 +282,7 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
 
 
     public void signOutTemp(View view) {
-        thisActivity.signOutmAuth();//Firebase sign out
+        FirebaseAuth.getInstance().signOut();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))

@@ -12,24 +12,11 @@
         android:gravity="start"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="signOutTemp"
-                android:text="Sign Out Temp" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="refreshTemp"
-                android:text="Refresh Temp" />
-
-        </LinearLayout>
+            android:onClick="signOutTemp"
+            android:text="Sign Out Temp" />
 
         <TextView
             android:layout_width="wrap_content"

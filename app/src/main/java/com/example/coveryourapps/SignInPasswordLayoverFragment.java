@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 
 import java.util.Objects;
@@ -58,7 +59,7 @@ public class SignInPasswordLayoverFragment extends Fragment implements View.OnCl
             if (!thisActivity.isSigningInWithEmail()) {
                 thisActivity.changeLoginLayover(thisActivity.getSignInBirthdayLayoverFragment());
             } else {
-                thisActivity.getmAuth().signInWithEmailAndPassword(thisActivity.getEmail(), thisActivity.getPassword()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                FirebaseAuth.getInstance().signInWithEmailAndPassword(thisActivity.getEmail(), thisActivity.getPassword()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (!task.isSuccessful()) {

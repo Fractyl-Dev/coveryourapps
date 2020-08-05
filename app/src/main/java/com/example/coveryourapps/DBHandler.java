@@ -59,28 +59,30 @@ public class DBHandler extends Application {
         mAuth = FirebaseAuth.getInstance();
         currentFirebaseUser = mAuth.getCurrentUser();
 
-        currentUserFound = false;
-        DB = FirebaseFirestore.getInstance();
-        DB.collection("users")
-                .whereEqualTo("uid", currentFirebaseUser.getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            for (DocumentSnapshot userSnapshot : task.getResult()) {
-                                currentUser = userSnapshot.toObject(User.class);
-                                //Refresh the user's cover array
-                                refreshCovers();
-                                refreshFriendsList();
-                                refreshContractTemplates();
+        if (currentFirebaseUser != null) {
+            currentUserFound = false;
+            DB = FirebaseFirestore.getInstance();
+            DB.collection("users")
+                    .whereEqualTo("uid", currentFirebaseUser.getUid())
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                for (DocumentSnapshot userSnapshot : task.getResult()) {
+                                    currentUser = userSnapshot.toObject(User.class);
+                                    //Refresh the user's cover array
+                                    refreshCovers();
+                                    refreshFriendsList();
+                                    refreshContractTemplates();
+                                }
+                                currentUserFound = true;
+                            } else {
+                                declareError();
                             }
-                            currentUserFound = true;
-                        } else {
-                            declareError();
                         }
-                    }
-                });
+                    });
+        }
     }
     public static void refreshAllNonUser() {
         refreshCovers();

@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 
@@ -55,13 +56,9 @@ public class SignInEmailLayoverFragment extends Fragment implements View.OnClick
 
     @Override
     public void onClick(View v) {
-
-        thisActivity.refreshmAuth();
-        thisActivity.refreshCurrentUser();
-
         if (!thisActivity.isSigningInWithEmail()) {
             // Check if email is in use by trying to sign in with an impossible password
-            thisActivity.getmAuth().signInWithEmailAndPassword(emailEditText.getText().toString(), "test").addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            FirebaseAuth.getInstance().signInWithEmailAndPassword(emailEditText.getText().toString(), "test").addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (!task.isSuccessful()) {
