@@ -106,33 +106,38 @@ public class DBHandler extends Application {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful() && task.getResult() != null) {
-                            for (DocumentSnapshot coversSnapshot : task.getResult()) {
-                                final Cover cover = coversSnapshot.toObject(Cover.class);
-                                assert cover != null;//Needed so android studio doesn't think it's wrong
-                                cover.setDocID(coversSnapshot.getId());
-                                cover.setSender(currentUser);
+                            if (task.getResult().size() != 0) {
+                                for (DocumentSnapshot coversSnapshot : task.getResult()) {
+                                    final Cover cover = coversSnapshot.toObject(Cover.class);
+                                    assert cover != null;//Needed so android studio doesn't think it's wrong
+                                    cover.setDocID(coversSnapshot.getId());
+                                    cover.setSender(currentUser);
 
-                                nonFinalSenderResultSize = task.getResult().size();
+                                    nonFinalSenderResultSize = task.getResult().size();
 
-                                DB.collection("users")
-                                        .document(cover.getRecipientID())
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                if (task.isSuccessful() && task.getResult() != null) {
-                                                    cover.setRecipient(task.getResult().toObject(User.class));
-                                                    addCoverToAllUserCovers(cover);
-                                                    nonFinalSenderIteration ++;
-                                                    if (nonFinalSenderIteration == nonFinalSenderResultSize) {
-                                                        Log.d("**DBHandler |", "Sent Covers Checked to true");
-                                                        sentCoversChecked = true;
+                                    DB.collection("users")
+                                            .document(cover.getRecipientID())
+                                            .get()
+                                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                    if (task.isSuccessful() && task.getResult() != null) {
+                                                        cover.setRecipient(task.getResult().toObject(User.class));
+                                                        addCoverToAllUserCovers(cover);
+                                                        nonFinalSenderIteration++;
+                                                        if (nonFinalSenderIteration == nonFinalSenderResultSize) {
+                                                            Log.d("**DBHandler |", "Sent Covers Checked to true");
+                                                            sentCoversChecked = true;
+                                                        }
+                                                    } else {
+                                                        declareError();
                                                     }
-                                                } else {
-                                                    declareError();
                                                 }
-                                            }
-                                        });
+                                            });
+                                }
+                            } else {
+                                Log.d("**DBHandler |", "No Sent Covers, sent covers checked to true");
+                                sentCoversChecked = true;
                             }
                         } else {
                             declareError();
@@ -148,32 +153,37 @@ public class DBHandler extends Application {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful() && task.getResult() != null) {
-                            for (DocumentSnapshot coversSnapshot : task.getResult()) {
-                                final Cover cover = coversSnapshot.toObject(Cover.class);
-                                assert cover != null;//Needed so android studio doesn't think it's wrong
-                                cover.setDocID(coversSnapshot.getId());
-                                cover.setRecipient(currentUser);
-                                nonFinalRecipientResultSize = task.getResult().size();
+                            if (task.getResult().size() != 0) {
+                                for (DocumentSnapshot coversSnapshot : task.getResult()) {
+                                    final Cover cover = coversSnapshot.toObject(Cover.class);
+                                    assert cover != null;//Needed so android studio doesn't think it's wrong
+                                    cover.setDocID(coversSnapshot.getId());
+                                    cover.setRecipient(currentUser);
+                                    nonFinalRecipientResultSize = task.getResult().size();
 
-                                DB.collection("users")
-                                        .document(cover.getSenderID())
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                if (task.isSuccessful() && task.getResult() != null) {
-                                                    cover.setSender(task.getResult().toObject(User.class));
-                                                    addCoverToAllUserCovers(cover);
-                                                    nonFinalRecipientIteration ++;
-                                                    if (nonFinalRecipientIteration == nonFinalRecipientResultSize) {
-                                                        Log.d("**DBHandler |", "Received Covers Checked to true");
-                                                        receivedCoversChecked = true;
+                                    DB.collection("users")
+                                            .document(cover.getSenderID())
+                                            .get()
+                                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                    if (task.isSuccessful() && task.getResult() != null) {
+                                                        cover.setSender(task.getResult().toObject(User.class));
+                                                        addCoverToAllUserCovers(cover);
+                                                        nonFinalRecipientIteration++;
+                                                        if (nonFinalRecipientIteration == nonFinalRecipientResultSize) {
+                                                            Log.d("**DBHandler |", "Received Covers Checked to true");
+                                                            receivedCoversChecked = true;
+                                                        }
+                                                    } else {
+                                                        declareError();
                                                     }
-                                                } else {
-                                                    declareError();
                                                 }
-                                            }
-                                        });
+                                            });
+                                }
+                            } else {
+                                Log.d("**DBHandler |", "No Received Covers, Received covers checked to true");
+                                receivedCoversChecked = true;
                             }
                         } else {
                             declareError();
@@ -185,28 +195,34 @@ public class DBHandler extends Application {
     public static void refreshFriendsList() {
         friendsChecked = false;
         allUserFriends = new ArrayList<>();
-        for (String friendUID : currentUser.getFriends()) {
-            DB.collection("users")
-                    .whereEqualTo("uid", friendUID)
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful() && task.getResult() != null) {
-                                for (DocumentSnapshot usersSnapshot : task.getResult()) {
-                                    User user = usersSnapshot.toObject(User.class);
-                                    addFriendToAllUserFriends(user);
-                                    if (currentUser.getFriends().size() == allUserFriends.size()) {
-                                        Log.d("**DBHandler |", "FriendsChecked to true");
-                                        friendsChecked = true;
+        if (currentUser.getFriends().size() != 0) {
+            for (String friendUID : currentUser.getFriends()) {
+                DB.collection("users")
+                        .whereEqualTo("uid", friendUID)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful() && task.getResult() != null) {
+                                    for (DocumentSnapshot usersSnapshot : task.getResult()) {
+                                        User user = usersSnapshot.toObject(User.class);
+                                        addFriendToAllUserFriends(user);
+                                        if (currentUser.getFriends().size() == allUserFriends.size()) {
+                                            Log.d("**DBHandler |", "FriendsChecked to true");
+                                            friendsChecked = true;
+                                        }
                                     }
+                                } else {
+                                    declareError();
                                 }
-                            } else {
-                                declareError();
                             }
-                        }
-                    });
+                        });
+            }
+        } else {
+            Log.d("DBHandler |", "No Friends Found, FriendsChecked to true");
+            friendsChecked = true;
         }
+
 
     }
 

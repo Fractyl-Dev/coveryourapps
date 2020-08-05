@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 public class ChooseContractFragment extends Fragment implements View.OnClickListener{
     private RecyclerView templatesRecyclerView;
+    private TextView noContractTemplatesTextView;
     private Button writeYourOwnButton;
     private CoverCreatorActvity thisActivity;
     private ArrayList<ContractTemplate> contractTemplates;
@@ -32,6 +33,7 @@ public class ChooseContractFragment extends Fragment implements View.OnClickList
         view = inflater.inflate(R.layout.fragment_choose_contract, container, false);
         thisActivity = (CoverCreatorActvity) getActivity();
         templatesRecyclerView = view.findViewById(R.id.templatesRecyclerView);
+        noContractTemplatesTextView = view.findViewById(R.id.noContractTemplatesTextView);
         templatesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         writeYourOwnButton = view.findViewById(R.id.writeYourOwnButton);
         writeYourOwnButton.setOnClickListener(this);
@@ -50,10 +52,15 @@ public class ChooseContractFragment extends Fragment implements View.OnClickList
             ArrayList<ContractTemplate> newContractTemplates = new ArrayList<>(DBHandler.getAllContractTemplates());
 
             //Only update if there is a difference, this allows for updating in the background with nothing happening if nothing is new
-            if (!contractTemplates.toString().equals(newContractTemplates.toString())) {
+            if (!contractTemplates.toString().equals(newContractTemplates.toString()) || contractTemplates.size() == 0) {
                 contractTemplates.clear();
                 contractTemplates.addAll(newContractTemplates);
-                templatesRecyclerView.setAdapter(new ChooseContractFragment.TemplatesAdapter(contractTemplates));
+                if (contractTemplates.size() != 0) {
+                    noContractTemplatesTextView.setVisibility(View.GONE);
+                    templatesRecyclerView.setAdapter(new ChooseContractFragment.TemplatesAdapter(contractTemplates));
+                } else {
+                    noContractTemplatesTextView.setVisibility(View.VISIBLE);
+                }
             }
         }
     }

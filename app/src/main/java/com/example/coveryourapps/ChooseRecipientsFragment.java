@@ -39,7 +39,7 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
     private ArrayList<User> yourFriends;
 
     private LinearLayout selectedRecipientsInfo;
-    private TextView selectedRecipientsTextView;
+    private TextView selectedRecipientsTextView, noFriendsTextView;
     private Button selectedRecipientsClearButton;
 
     @Override
@@ -49,12 +49,6 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
 
         yourFriendsRecyclerView = view.findViewById(R.id.yourFriendsRecyclerView);
         yourFriendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        //Populate friends in the UI
-        yourFriends = new ArrayList<>();
-        updateFriendsUI();
-//        yourFriendsRecyclerView.setAdapter(new ChooseRecipientsFragment.UsersAdapter(yourFriends));
-
 
         usernameSearch = view.findViewById(R.id.usernameSearch);
         usernameSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -72,9 +66,14 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
 
         selectedRecipientsInfo = view.findViewById(R.id.selectedRecipientsInfo);
         selectedRecipientsTextView = view.findViewById(R.id.selectedRecipientsTextView);
+        noFriendsTextView = view.findViewById(R.id.noFriendsTextView);
         selectedRecipientsClearButton = view.findViewById(R.id.selectedRecipientsClearButton);
         selectedRecipientsClearButton.setOnClickListener(this);
 
+
+        //Populate friends in the UI
+        yourFriends = new ArrayList<>();
+        updateFriendsUI();
 
         // Inflate the layout for this fragment
         return view;
@@ -90,10 +89,15 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
         ArrayList<User> newFriends = new ArrayList<>(DBHandler.getAllUserFriends());
 
         //Only update if there is a difference, this allows for updating in the background with nothing happening if nothing is new
-        if (!yourFriends.toString().equals(newFriends.toString())) {
+        if (!yourFriends.toString().equals(newFriends.toString()) || yourFriends.size() == 0) {
             yourFriends.clear();
             yourFriends.addAll(newFriends);
-            yourFriendsRecyclerView.setAdapter(new ChooseRecipientsFragment.UsersAdapter(yourFriends));
+            if (newFriends.size() != 0) {
+                noFriendsTextView.setVisibility(View.GONE);
+                yourFriendsRecyclerView.setAdapter(new ChooseRecipientsFragment.UsersAdapter(yourFriends));
+            } else {
+                noFriendsTextView.setVisibility(View.VISIBLE);
+            }
         }
     }
 

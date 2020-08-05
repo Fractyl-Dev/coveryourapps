@@ -105,5 +105,7 @@
     <string name="what_would_you_like_the_memo_to_be">What would you like the memo to be?</string>
     <string name="cash_review_default_text">Cash Review Default Text</string>
     <string name="cash_review_body_default_text">Cash Review Body Default Text</string>
+    <string name="you_don_t_have_any_friends">You don\'t have any friends</string>
+    <string name="no_contract_templates_available">No contract templates available</string>
 
 </resources>

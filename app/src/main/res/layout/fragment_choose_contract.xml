@@ -45,7 +45,16 @@
         android:layout_height="0.6dp"
         android:background="@android:color/black" />
 
-
+    <TextView
+        android:id="@+id/noContractTemplatesTextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|top"
+        android:paddingTop="30dp"
+        android:text="@string/no_contract_templates_available"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/templatesRecyclerView"
         android:layout_width="match_parent"

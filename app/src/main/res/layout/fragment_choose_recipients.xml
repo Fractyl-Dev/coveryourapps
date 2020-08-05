@@ -31,16 +31,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"
-        android:visibility="gone"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/selectedRecipientsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="12dp"
-            android:text="@string/selected_recipients"
             android:paddingVertical="4dp"
+            android:text="@string/selected_recipients"
             android:textColor="@android:color/black" />
 
         <LinearLayout
@@ -90,6 +90,17 @@
         android:text="@string/your_friends"
         android:textColor="@android:color/black"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/noFriendsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|top"
+        android:paddingTop="30dp"
+        android:text="@string/you_don_t_have_any_friends"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/yourFriendsRecyclerView"
