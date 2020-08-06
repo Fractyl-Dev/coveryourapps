@@ -49,6 +49,8 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
+        thisActivity = (MainActivity) getActivity();
+
         pendingCoversRecyclerView = view.findViewById(R.id.pendingRecyclerView);
         confirmedCoversRecyclerView = view.findViewById(R.id.confirmedRecyclerView);
         expiredCoversRecyclerView = view.findViewById(R.id.expiredRecyclerView);
@@ -61,7 +63,6 @@ public class HomeFragment extends Fragment {
         confirmedCoversRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         expiredCoversRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        thisActivity = (MainActivity) getActivity();
 
         pendingCovers = new ArrayList<>();
         confirmedCovers = new ArrayList<>();
@@ -83,12 +84,16 @@ public class HomeFragment extends Fragment {
         confirmedCovers.clear();
         expiredCovers.clear();
         for (Cover cover : DBHandler.getAllUserCovers()) {
-            if (cover.getStatus().equals("pending")) {
-                pendingCovers.add(cover);
-            } else if (cover.getStatus().equals("confirmed")) {
-                confirmedCovers.add(cover);
-            } else if (cover.getStatus().equals("expired")) {
-                expiredCovers.add(cover);
+            switch (cover.getStatus()) {
+                case "pending":
+                    pendingCovers.add(cover);
+                    break;
+                case "confirmed":
+                    confirmedCovers.add(cover);
+                    break;
+                case "expired":
+                    expiredCovers.add(cover);
+                    break;
             }
         }
 

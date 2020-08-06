@@ -55,6 +55,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/trashButtonLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center"
@@ -62,23 +63,58 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/friendAddButton"
+                android:id="@+id/friendTrashButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/friend_add_button"
                 android:padding="10dp"
-                android:src="@drawable/fab_plus"
+                android:src="@drawable/trash_icon"
                 android:tint="@color/colorPrimary" />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/trashConfirmLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center"
+            android:gravity="end"
+            android:visibility="gone"
+            android:orientation="horizontal">
 
+            <ImageButton
+                android:id="@+id/trashCheckButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/friend_add_button"
+                android:padding="10dp"
+                android:src="@drawable/check_icon"
+                android:tint="@color/colorPrimary" />
+
+            <View
+                android:layout_width="0.6dp"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="9dp"
+                android:background="@android:color/black" />
+
+            <ImageButton
+                android:id="@+id/trashCancelButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/friend_add_button"
+                android:padding="10dp"
+                android:src="@drawable/close_icon_bigger"
+                android:tint="@color/colorPrimary" />
+
+        </LinearLayout>
     </LinearLayout>
-
     <View
         android:layout_width="match_parent"
         android:layout_height="0.6dp"
         android:layout_marginTop="5dp"
         android:background="@android:color/black" />
+
 </LinearLayout>

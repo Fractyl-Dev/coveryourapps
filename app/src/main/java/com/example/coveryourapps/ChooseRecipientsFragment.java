@@ -187,8 +187,10 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful() && task.getResult() != null) {
+                            if (task.getResult().size() == 0) {
+                                Toast.makeText(thisActivity, "User not found", Toast.LENGTH_SHORT).show();
+                            }
                             for (DocumentSnapshot displayNameSnapshot : task.getResult()) {
-//                                String displayName = displayNameSnapshot.toObject(String.class);
                                 DBHandler.getDB().collection("users")
                                         .document(displayNameSnapshot.getId())
                                         .get()
@@ -210,20 +212,6 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
                         }
                     }
                 });
-        /*for (User user : thisActivity.getAllUsers()) {
-            if (user.getDisplayName().equals(displayName)) {
-                String searchedUserUID = user.getUid();
-                if (!thisActivity.getSelectedRecipients().contains(searchedUserUID)) {
-                    thisActivity.addToSelectedRecipients(searchedUserUID);
-                    updateSelectedRecipientsUI();
-                    Log.d("**Choose Recipients Fragment |", "Added USERNAME UID " + user.getUid() + " to array. Array is now " + thisActivity.getSelectedRecipients().toString());
-                } else {
-                    Log.d("**Choose Recipients Fragment |", "Username UID already added to selected recipients");
-                }
-            }
-        }
-
-         */
         usernameSearch.setText("");
     }
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -54,18 +56,10 @@ public class CashTransactionFragment extends Fragment implements View.OnClickLis
 
 
     //Bs because you can't change things that aren't final in DB on success, but you can do it like this
-    private static boolean alreadySentBack = false;
-    private boolean getAlreadySentBack() {
-        return alreadySentBack;
-    }
-    private void setAlreadySentBack(boolean bool) {
-        alreadySentBack = bool;
-    }
-
+    int recipientIteration;
     public  void createAndUploadCover(String memo, String content) {
-        setAlreadySentBack(false);
-        for (User recipient : thisActivity.getSelectedRecipients()) {
-
+        recipientIteration = 0;
+        for (final User recipient : thisActivity.getSelectedRecipients()) {
             // You're supposed to use Map to put data in a Firestore DB
             Map<String, Object> updateMap = new HashMap<>();
             updateMap.put("content", content);
@@ -82,14 +76,15 @@ public class CashTransactionFragment extends Fragment implements View.OnClickLis
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
-                            Log.d("**Contract Template Argument |", "Cover added to DB");
-
-                            //Send back to main screen
-                            if (!getAlreadySentBack()) {
-                                Intent nextIntent = new Intent(thisActivity, MainActivity.class);
-                                thisActivity.startActivity(nextIntent);
-                                Toast.makeText(thisActivity, "Sent successfully", Toast.LENGTH_SHORT).show();
-                                setAlreadySentBack(true);
+                            Log.d("**Cash Transaction Fragment |", "Cover added to DB");
+                            //Add Recipient to friends list
+                            if (!DBHandler.getAllUserFriends().contains(recipient)) {
+                                DBHandler.getDB().collection("users").document(DBHandler.getCurrentFirebaseUser().getUid())
+                                        .update("friends", FieldValue.arrayUnion(recipient.getUid()));
+                            }
+                            recipientIteration ++;
+                            if (recipientIteration == thisActivity.getSelectedRecipients().size()) {
+                                refresh();
                             }
                         }
                     })
@@ -101,5 +96,24 @@ public class CashTransactionFragment extends Fragment implements View.OnClickLis
                         }
                     });
         }
+    }
+    public void refresh() {
+        DBHandler.refreshUser(true);
+        onRefreshFinished();
+    }
+    private void onRefreshFinished() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (DBHandler.checkIfDoneThinking()) {
+                    Log.d("**Cash Transaction Fragment |", "Uploaded cover to database and DBHandler has updated, sending to home fragment");
+                    Intent nextIntent = new Intent(thisActivity, MainActivity.class);
+                    thisActivity.startActivity(nextIntent);
+                    Toast.makeText(thisActivity, "Sent successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    onRefreshFinished();
+                }
+            }
+        }, DBHandler.getRefreshDelay());
     }
 }

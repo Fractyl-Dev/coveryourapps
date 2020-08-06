@@ -110,5 +110,6 @@
     <string name="no_pending_covers">No pending covers</string>
     <string name="no_confirmed_covers">No confirmed covers</string>
     <string name="no_expired_covers">No expired covers</string>
+    <string name="add_friends_by_username">Add friends by username</string>
 
 </resources>

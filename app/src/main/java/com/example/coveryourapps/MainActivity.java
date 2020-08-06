@@ -33,13 +33,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private HomeFragment homeFragment;
-    private Fragment friendsFragment, settingsFragment, aboutFragment, profileInformationFragment, reviewCoverFragment;
+    private FriendsFragment friendsFragment;
+    private Fragment settingsFragment, aboutFragment, profileInformationFragment, reviewCoverFragment;
     private String displayedFragment;
     private DrawerLayout drawerLayout;
     private NavigationView profileView;
@@ -129,8 +131,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void run() {
                 if (DBHandler.checkIfDoneThinking()) {
-                    Log.d("**Main Activity |", "Handler done thinking, updating home fragment");
+                    Log.d("**Main Activity |", "Handler done refreshing, updating UI");
                     homeFragment.updateCoversUI();
+                    friendsFragment.updateFriendsUI();
                     refreshLayout.setRefreshing(false);
                 } else {
                     onRefreshFinished();
@@ -256,10 +259,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     public void goBack() {
-        if (displayedFragment.equals("homeFragment")) {
-            Intent nextIntent = new Intent(MainActivity.this, MainActivity.class);
-            startActivity(nextIntent);
-        } else if (displayedFragment.equals("reviewCoverFragment")
+        if (displayedFragment.equals("reviewCoverFragment")
                 || displayedFragment.equals("profileInformationFragment")
                 || displayedFragment.equals("friendsFragment")
                 || displayedFragment.equals("settingsFragment")
@@ -315,47 +315,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    /*public FirebaseFirestore getDB() {
-        return DB;
-    }
-
-    public void setDB(FirebaseFirestore DB) {
-        this.DB = DB;
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public FirebaseAuth getmAuth() {
-        return mAuth;
-    }
-
-    public void setmAuth(FirebaseAuth mAuth) {
-        this.mAuth = mAuth;
-    }
-
-    public FirebaseUser getCurrentFirebaseUser() {
-        return currentFirebaseUser;
-    }
-
-    public void setCurrentFirebaseUser(FirebaseUser currentFirebaseUser) {
-        this.currentFirebaseUser = currentFirebaseUser;
-    }
-
-    public ArrayList<Cover> getAllUserCovers() {
-        return allUserCovers;
-    }
-
-    public void setAllUserCovers(ArrayList<Cover> allUserCovers) {
-        this.allUserCovers = allUserCovers;
-    }
-    */
-
     public Cover getReviewCover() {
         return reviewCover;
     }
@@ -376,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return friendsFragment;
     }
 
-    public void setFriendsFragment(Fragment friendsFragment) {
+    public void setFriendsFragment(FriendsFragment friendsFragment) {
         this.friendsFragment = friendsFragment;
     }
 
