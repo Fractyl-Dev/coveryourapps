@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class LendItemFragment extends Fragment implements View.OnClickListener{
-    CoverCreatorActvity thisActivity;
+    CoverCreatorActvity thisActivity;//
     private EditText itemNameEditText, memoEditText;
     private Button uploadImageButton, returnDateButton, continueButton;
     @Override
