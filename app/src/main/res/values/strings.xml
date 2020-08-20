@@ -111,5 +111,10 @@
     <string name="no_confirmed_covers">No confirmed covers</string>
     <string name="no_expired_covers">No expired covers</string>
     <string name="add_friends_by_username">Add friends by username</string>
+    <string name="item_name">Item Name</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="return_date">Return Date</string>
 
 </resources>
