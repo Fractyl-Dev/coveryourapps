@@ -13,7 +13,8 @@ public class Cover {
     private String coverType, id, docID, memo, status, senderID, recipientID, content;//ID is the gay one Apple needs, docID is where firestore id is saved
     private User sender, recipient;
     private Date createdTime;
-    private boolean droppedDown;//Used to keep the cover dropped down after refreshing
+    private boolean droppedDown;//Used to keep the cover dropped down after refreshing on home screen
+    private ArrayList<String> pictures;
 
     public Cover() {
         droppedDown = false;
@@ -110,6 +111,14 @@ public class Cover {
 
     public void setDocID(String docID) {
         this.docID = docID;
+    }
+
+    public ArrayList<String> getPictures() {
+        return pictures;
+    }
+
+    public void setPictures(ArrayList<String> pictures) {
+        this.pictures = pictures;
     }
 
     public boolean isDroppedDown() {

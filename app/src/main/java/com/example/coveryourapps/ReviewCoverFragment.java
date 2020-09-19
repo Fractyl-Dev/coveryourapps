@@ -1,18 +1,30 @@
 package com.example.coveryourapps;
 
 import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 public class ReviewCoverFragment extends Fragment implements View.OnClickListener {
     private MainActivity thisActivity;
+    private RecyclerView imagesRecyclerView;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -42,7 +54,17 @@ public class ReviewCoverFragment extends Fragment implements View.OnClickListene
                 cashReviewBodyText.setText("Memo:\n\t" + reviewCover.getMemo());
             }
         } else {
-            view = inflater.inflate(R.layout.fragment_review_contract, container, false);
+            view = inflater.inflate(R.layout.fragment_review_lending, container, false);
+            TextView lendingReviewTitle = view.findViewById(R.id.lendingReviewTitle);
+            TextView lendingReviewText = view.findViewById(R.id.lendingReviewText);
+
+            lendingReviewTitle.setText(thisActivity.getReviewCover().getMemo());
+            lendingReviewText.setText(thisActivity.getReviewCover().getContent());
+
+            LinearLayoutManager horizontalLayout = new LinearLayoutManager(thisActivity, LinearLayoutManager.HORIZONTAL, false);
+            imagesRecyclerView = view.findViewById(R.id.imagesRecyclerView);
+            imagesRecyclerView.setLayoutManager(horizontalLayout);
+            imagesRecyclerView.setAdapter(new ReviewCoverFragment.ImagesAdapter(thisActivity.getReviewCover().getPictures()));
         }
 
         Button backButton = view.findViewById(R.id.backButton);
@@ -57,6 +79,50 @@ public class ReviewCoverFragment extends Fragment implements View.OnClickListene
     public void onClick(View v) {
         if (v.getId() == R.id.backButton) {
             thisActivity.changeFragmentLayover(thisActivity.getHomeFragment(), "homeFragment", false);
+        }
+    }
+
+
+    class ImagesAdapter extends RecyclerView.Adapter<ReviewCoverFragment.ImageViewHolder> {
+        private ArrayList<String> urls;
+
+        public ImagesAdapter(ArrayList<String> urls) {
+            super();
+            this.urls = urls;
+        }
+
+        @NonNull
+        @Override
+        public ReviewCoverFragment.ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new ReviewCoverFragment.ImageViewHolder(parent);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ReviewCoverFragment.ImageViewHolder holder, int position) {
+            holder.bind(this.urls.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return this.urls.size();
+        }
+    }
+
+    class ImageViewHolder extends RecyclerView.ViewHolder {
+        private ImageView image;
+        private ImageButton deleteButton;
+        private String uri;
+
+        public ImageViewHolder(ViewGroup container) {
+            super(LayoutInflater.from(getContext()).inflate(R.layout.lend_image_item, container, false));
+            image = itemView.findViewById(R.id.image);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
+        }
+
+        public void bind(String theUrl) {
+            this.uri = theUrl;
+            Picasso.get().load(uri).into(this.image);
+            deleteButton.setVisibility(View.GONE);
         }
     }
 }

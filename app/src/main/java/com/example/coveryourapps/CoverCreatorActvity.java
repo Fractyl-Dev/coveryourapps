@@ -31,7 +31,7 @@ import java.util.Objects;
 
 public class CoverCreatorActvity extends AppCompatActivity implements View.OnClickListener {
 
-    private Fragment cashTransactionFragment, contractTemplateOverviewFragment, contractTemplateArgumentFragment, writeAContractFragment;
+    private Fragment cashTransactionFragment, contractTemplateOverviewFragment, contractTemplateArgumentFragment, writeAContractFragment, lendItemFragment;
     private ChooseRecipientsFragment chooseRecipientsFragment;
     private ChooseContractFragment chooseContractFragment;
     private String displayedFragment;
@@ -64,6 +64,7 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
         contractTemplateOverviewFragment = new ContractTemplateOverviewFragment();
         contractTemplateArgumentFragment = new ContractTemplateArgumentFragment();
         writeAContractFragment = new WriteAContractFragment();
+        lendItemFragment = new LendItemFragment();
 
         selectedRecipients = new ArrayList<>();
 
@@ -243,6 +244,10 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
                             toolbarBackButton.setImageResource(R.drawable.back_arrow);
                             toolbarNextButton.setVisibility(View.GONE);
                             changeCoverCreatorLayover(cashTransactionFragment, "cashTransactionFragment");
+                        } else if (selectedCover.equals("Lend an Item")) {
+                            toolbarTopText.setText(R.string.lend_an_item);
+                            toolbarNextButton.setVisibility(View.GONE);
+                            changeCoverCreatorLayover(lendItemFragment, "lendItemFragment");
                         }
                     } else {
                         Toast.makeText(this, "Please select at least one recipient", Toast.LENGTH_SHORT).show();
@@ -259,7 +264,7 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
 
             Intent nextIntent = new Intent(CoverCreatorActvity.this, MainActivity.class);
             startActivity(nextIntent);
-        } else if (displayedFragment.equals("chooseContractFragment") || displayedFragment.equals("cashTransactionFragment")) {
+        } else if (displayedFragment.equals("chooseContractFragment") || displayedFragment.equals("cashTransactionFragment") || displayedFragment.equals("lendItemFragment")) {
             toolbarTopText.setText(getString(R.string.add_people));
             toolbarBackButton.setImageResource(R.drawable.close_icon);
             toolbarNextButton.setVisibility(View.VISIBLE);

@@ -116,5 +116,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="upload_image">Upload Image</string>
     <string name="return_date">Return Date</string>
+    <string name="lend_an_item">Lend an Item</string>
+    <string name="lending_default_title">Lending Default Title</string>
+    <string name="lending_default_text">Lending Default Text</string>
 
 </resources>
