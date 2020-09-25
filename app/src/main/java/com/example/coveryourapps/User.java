@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public class User {
     private String uid, name, displayName, birthdate;
-    private ArrayList<String> notificationTokens = new ArrayList<>();
+    private ArrayList<String> notificationTokens = new ArrayList<>();//Fuck you Stephen -Miles
     private ArrayList<String> friends = new ArrayList<>();//Empty upon user creation
     private ArrayList<String> covers = new ArrayList<>();//Empty upon user creation
     private ArrayList<String> displayNames = new ArrayList<>();//Used to check if a display name is taken when generating display name
