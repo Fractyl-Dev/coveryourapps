@@ -21,18 +21,6 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/emailInUseErrorText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="8dp"
-        android:text="@string/email_already_in_use"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:visibility="gone" />
-
-    <TextView
         android:id="@+id/emailNotValidErrorText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

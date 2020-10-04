@@ -55,6 +55,8 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
     // Google Sign In
     private GoogleSignInClient mGoogleSignInClient;
     private static int RC_GOOGLE_SIGN_IN = 0;//Can be anything
+    private static FirebaseAuth mAuth;
+
 
     // Facebook Sign In
     CallbackManager fbCallbackManager = CallbackManager.Factory.create();
@@ -67,10 +69,6 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
         thisActivity = (LoginActivity) getActivity();
 
         // Declare layout objects
-        Button tempSignOut = view.findViewById(R.id.tempLogoutButton);
-        tempSignOut.setOnClickListener(this);
-        Button createAccountButton = view.findViewById(R.id.createAccount);
-        createAccountButton.setOnClickListener(this);
         Button emailSignInButton = view.findViewById(R.id.emailSignInButton);
         emailSignInButton.setOnClickListener(this);
 
@@ -188,7 +186,6 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("**Sign In Layover | Firebase Auth", "signInWithCredential:failure", task.getException());
-
                         }
                     }
                 });
@@ -245,14 +242,8 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
             case R.id.googleSignInButton:
                 googleSignIn();
                 break;
-            case R.id.tempLogoutButton:
-                signOutTemp(v);
-                break;
             case R.id.emailSignInButton:
                 emailSignIn();
-                break;
-            case R.id.createAccount:
-                createAccount();
                 break;
         }
     }

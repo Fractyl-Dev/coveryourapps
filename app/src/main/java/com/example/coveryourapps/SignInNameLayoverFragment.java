@@ -50,7 +50,7 @@ public class SignInNameLayoverFragment extends Fragment implements View.OnClickL
             nameNotEnteredErrorText.setVisibility(View.GONE);
         } else if (!nameEditText.getText().toString().equals("")) {
             thisActivity.setName(nameEditText.getText().toString());
-            thisActivity.changeLoginLayover(thisActivity.getSignInEmailLayoverFragment());
+            thisActivity.changeLoginLayover(thisActivity.getSignInBirthdayLayoverFragment());
         } else {
             nameNotEnteredErrorText.setVisibility(View.VISIBLE);
             nameNotValidErrorText.setVisibility(View.GONE);

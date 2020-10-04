@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +30,7 @@ import java.util.Date;
 import java.util.Objects;
 
 public class SignInBirthdayLayoverFragment extends Fragment implements View.OnClickListener {
-    private LoginActivity thisActivity;
+    private static LoginActivity thisActivity;
     private GoogleSignInAccount googleAccount;
     private static Context context;// For create user to call static class onUserCreated when create user is complete
 
@@ -73,6 +74,26 @@ public class SignInBirthdayLayoverFragment extends Fragment implements View.OnCl
         return view;
     }
 
+    private static void refreshDB() {
+        DBHandler.refreshUser(true);
+        onRefreshFinished();
+    }
+
+    private static void onRefreshFinished() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (DBHandler.checkIfDoneThinking()) {
+                    Log.d("**SignInBirthdayLayoverFragment |", "Birthday updated, sending to main activity");
+                    Intent nextIntent = new Intent(thisActivity, MainActivity.class);
+                    thisActivity.startActivity(nextIntent);
+                } else {
+                    onRefreshFinished();
+                }
+            }
+        }, DBHandler.getRefreshDelay());
+    }
+
     private String lessThan10Fix(int input) {
         String output;
         if (input < 10) {
@@ -111,9 +132,11 @@ public class SignInBirthdayLayoverFragment extends Fragment implements View.OnCl
     }
 
     public static void onUserCreated() {
+        //Called from Create User onComplete()
         Log.d("Sign In Birthday | Account Creation", "Authenticated, sent user class to db, now sending to main activity");
-        Intent nextIntent = new Intent(context, MainActivity.class);
-        context.startActivity(nextIntent);
+//        Intent nextIntent = new Intent(context, MainActivity.class);
+//        context.startActivity(nextIntent);
+        refreshDB();
     }
 
 }

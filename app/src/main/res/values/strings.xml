@@ -119,5 +119,8 @@
     <string name="lend_an_item">Lend an Item</string>
     <string name="lending_default_title">Lending Default Title</string>
     <string name="lending_default_text">Lending Default Text</string>
+    <string name="there_is_no_account_registered_with_this_email_address">There is no account registered with this email address</string>
+    <string name="incorrect_password">Incorrect Password</string>
+    <string name="create_instructions">If you don\'t have an account, click a button below and one will be made for you.</string>
 
 </resources>

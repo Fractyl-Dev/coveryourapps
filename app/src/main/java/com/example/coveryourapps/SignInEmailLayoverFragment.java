@@ -31,7 +31,7 @@ public class SignInEmailLayoverFragment extends Fragment implements View.OnClick
     LoginActivity thisActivity;
 
     EditText emailEditText;
-    TextView emailNotEnteredErrorText, emailNotValidErrorText, emailInUseErrorText;
+    TextView emailNotEnteredErrorText, emailNotValidErrorText;
 
 
     @Override
@@ -47,8 +47,6 @@ public class SignInEmailLayoverFragment extends Fragment implements View.OnClick
         emailEditText = view.findViewById(R.id.emailEnterText);
         emailNotEnteredErrorText = view.findViewById(R.id.emailNotEnteredErrorText);
         emailNotValidErrorText = view.findViewById(R.id.emailNotValidErrorText);
-        emailInUseErrorText = view.findViewById(R.id.emailInUseErrorText);
-
 
         // Inflate the layout for this fragment
         return view;
@@ -56,57 +54,50 @@ public class SignInEmailLayoverFragment extends Fragment implements View.OnClick
 
     @Override
     public void onClick(View v) {
-        if (!thisActivity.isSigningInWithEmail()) {
-            // Check if email is in use by trying to sign in with an impossible password
-            FirebaseAuth.getInstance().signInWithEmailAndPassword(emailEditText.getText().toString(), "test").addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (!task.isSuccessful()) {
-                        try {
-                            Log.d("** Sign In Email | ", task.getException().getLocalizedMessage()+"");
-                            throw Objects.requireNonNull(task.getException());
-                        }
-                        // if user enters wrong email (Email not in use!)
-                        catch (FirebaseAuthInvalidUserException invalidEmail) {
-                            Log.d("** Sign In Email | ", "Invalid Email - Email is free to take");
+        // Check email by trying to sign in with an impossible password
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(emailEditText.getText().toString(), "test").addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (!task.isSuccessful()) {
+                    try {
+                        Log.d("** Sign In Email | ", task.getException().getLocalizedMessage() + "");
+                        throw Objects.requireNonNull(task.getException());
+                    }
+                    // if user enters wrong email (Email not in use!)
+                    catch (FirebaseAuthInvalidUserException invalidEmail) {
+                        Log.d("** Sign In Email | ", "Invalid Email - Email is free to take");
+                        normalErrorsCheck();
+                    } catch (FirebaseAuthInvalidCredentialsException badlyFormattedEmail) {
+                        if (Objects.equals(task.getException().getLocalizedMessage(), "The password is invalid or the user does not have a password.")) {
+                            Log.d("** Sign In Email | ", "Wrong Password - Email is taken");
                             normalErrorsCheck();
+                        } else {
+                            Log.d("** Sign In Email | ", "Email Badly Formatted");
+                            displayErrorMessage(emailNotValidErrorText);
                         }
-                        catch (FirebaseAuthInvalidCredentialsException badlyFormattedEmail){
-                            if (Objects.equals(task.getException().getLocalizedMessage(), "The password is invalid or the user does not have a password.")) {
-                                Log.d("** Sign In Email | ", "Wrong Password - Email is taken");
-                                emailInUseErrorText.setVisibility(View.VISIBLE);
-                                emailNotEnteredErrorText.setVisibility(View.GONE);
-                                emailNotValidErrorText.setVisibility(View.GONE);
-                            } else {
-                                Log.d("** Sign In Email | ", "Email Badly Formatted");
-                                emailNotValidErrorText.setVisibility(View.VISIBLE);
-                                emailInUseErrorText.setVisibility(View.GONE);
-                                emailNotEnteredErrorText.setVisibility(View.GONE);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-            });
-        } else {
-            // Signing in, not making new account, so don't need above check to see if email is in use
-            normalErrorsCheck();
-        }
+            }
+        });
+    }
+
+    private void displayErrorMessage(TextView displayedView) {
+        emailNotValidErrorText.setVisibility(View.GONE);
+        emailNotEnteredErrorText.setVisibility(View.GONE);
+
+        displayedView.setVisibility(View.VISIBLE);
     }
 
     private void normalErrorsCheck() {
         if (!emailEditText.getText().toString().contains("@") || emailEditText.getText().length() < 3) {
-            emailNotValidErrorText.setVisibility(View.VISIBLE);
-            emailInUseErrorText.setVisibility(View.GONE);
-            emailNotEnteredErrorText.setVisibility(View.GONE);
+            displayErrorMessage(emailNotValidErrorText);
         } else if (!emailEditText.getText().toString().equals("")) {
             thisActivity.setEmail(emailEditText.getText().toString());
             thisActivity.changeLoginLayover(thisActivity.getSignInPasswordLayoverFragment());
         } else {
-            emailNotEnteredErrorText.setVisibility(View.VISIBLE);
-            emailInUseErrorText.setVisibility(View.GONE);
-            emailNotValidErrorText.setVisibility(View.GONE);
+            displayErrorMessage(emailNotEnteredErrorText);
         }
     }
 }
