@@ -211,9 +211,6 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
                             //Picasso big good
                             imageURLs.add(downloadUri);
                             imagesRecyclerView.setAdapter(new LendItemFragment.ImagesAdapter(imageURLs));
-//                            Picasso.get().load(downloadUri).into(testImage);
-
-                            Toast.makeText(thisActivity, "Other thing   |   " + downloadUri, Toast.LENGTH_LONG).show();
                             Log.d("**Lend Item Fragment | ", downloadUri.toString());
                         } else {
                             // Handle failures
