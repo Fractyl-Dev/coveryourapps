@@ -205,7 +205,13 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
                     Intent nextIntent = new Intent(getActivity(), MainActivity.class);
                     startActivity(nextIntent);
                 } else {
-                    onRefreshFinished();
+                    if (DBHandler.isGoogleQuitDuringAccountCreation()) {
+                        DBHandler.setGoogleQuitDuringAccountCreation(false);
+                        thisActivity.changeLoginLayover(thisActivity.getSignInBirthdayLayoverFragment());
+                    } else {
+                        onRefreshFinished();
+                        Log.d("**Sign In Layover", "Still refreshing");
+                    }
                 }
             }
         }, DBHandler.getRefreshDelay());

@@ -20,7 +20,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.auth.User;
 
 public class SplashActivity extends AppCompatActivity {
-//    private DBHandler.DBActions dbActions = new DBHandler.DBActions();
+    private static boolean googleQuitDuringAccountCreation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +54,19 @@ public class SplashActivity extends AppCompatActivity {
                     startActivity(nextIntent);
                 } else {
                     Log.d("**Splash Activity |", "Not done thinking");
-                    ensureEverythingReadyDelay();
+                    if (DBHandler.isGoogleQuitDuringAccountCreation()) {
+                        // Send to login because the user quit the app while making an account. This is determined in DBHandler
+                        Intent nextIntent = new Intent(SplashActivity.this, LoginActivity.class);
+                        startActivity(nextIntent);
+                    } else {
+                        ensureEverythingReadyDelay();
+                    }
                 }
             }
         }, DBHandler.getRefreshDelay());
+    }
+
+    public static void setGoogleQuitDuringAccountCreation(boolean value) {
+        googleQuitDuringAccountCreation = value;
     }
 }

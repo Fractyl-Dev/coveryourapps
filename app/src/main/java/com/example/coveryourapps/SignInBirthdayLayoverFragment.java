@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -14,12 +15,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -28,10 +33,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 
 public class SignInBirthdayLayoverFragment extends Fragment implements View.OnClickListener {
     private static LoginActivity thisActivity;
     private GoogleSignInAccount googleAccount;
+
+    private TextView signUpQuitEarlyTextView;
+    private Button submitButton, signUpQuitEarlyButton;
     private static Context context;// For create user to call static class onUserCreated when create user is complete
 
     @Override
@@ -45,8 +54,17 @@ public class SignInBirthdayLayoverFragment extends Fragment implements View.OnCl
         context = this.getContext();
 
         thisActivity = (LoginActivity) getActivity();
-        Button tempSignOut = view.findViewById(R.id.submitButton);
-        tempSignOut.setOnClickListener(this);
+
+        signUpQuitEarlyTextView = view.findViewById(R.id.signUpQuitEarlyTextView);
+        submitButton = view.findViewById(R.id.submitButton);
+        signUpQuitEarlyButton = view.findViewById(R.id.signUpQuitEarlyButton);
+        submitButton.setOnClickListener(this);
+        signUpQuitEarlyButton.setOnClickListener(this);
+
+        if (DBHandler.isGoogleQuitDuringAccountCreation()) {
+            signUpQuitEarlyTextView.setVisibility(View.VISIBLE);
+            signUpQuitEarlyButton.setVisibility(View.VISIBLE);
+        }
 
 
         // Calendar
@@ -116,7 +134,40 @@ public class SignInBirthdayLayoverFragment extends Fragment implements View.OnCl
             case R.id.submitButton:
                 submit();
                 break;
+            case R.id.signUpQuitEarlyButton:
+                signOut();
+                break;
         }
+    }
+
+    private void signOut() {
+        DBHandler.setGoogleQuitDuringAccountCreation(false);
+
+        FirebaseAuth.getInstance().signOut();//Firebase sign out
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(thisActivity, gso);
+
+        // Google sign out
+        mGoogleSignInClient.signOut().addOnCompleteListener(thisActivity,
+                new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        thisActivity.changeLoginLayover(thisActivity.getSignInLayoverFragment());
+                    }
+                });
+
+
+        // Facebook
+        /*
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        LoginManager.getInstance().logOut();
+        AccessToken.setCurrentAccessToken(null);*/
+
     }
 
     private void submit() {

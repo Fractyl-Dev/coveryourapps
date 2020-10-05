@@ -38,7 +38,12 @@ public class LoginActivity extends AppCompatActivity {
 
         signingInWithEmail = false;
 
-        changeLoginLayover(signInLayoverFragment);
+        // Did they sign in with google and then quit app before submitting a birthday? If so, send to birthday to finish account creation.
+        if (DBHandler.isGoogleQuitDuringAccountCreation()) {
+            changeLoginLayover(signInBirthdayLayoverFragment);
+        } else {
+            changeLoginLayover(signInLayoverFragment);
+        }
     }
 
 

@@ -122,5 +122,7 @@
     <string name="there_is_no_account_registered_with_this_email_address">There is no account registered with this email address</string>
     <string name="incorrect_password">Incorrect Password</string>
     <string name="create_instructions">If you don\'t have an account, click a button below and one will be made for you.</string>
+    <string name="sign_up_quit_early">It appears as if you quit the app before you finished creating an account. Enter your birthday above to create your account, or sign out and start over.</string>
+    <string name="sign_out">Sign Out</string>
 
 </resources>

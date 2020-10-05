@@ -53,11 +53,13 @@ public class DBHandler extends Application {
     private static int refreshDelay = 100;
 
     private static boolean currentUserFound, sentCoversChecked, receivedCoversChecked, friendsChecked, contractTemplatesChecked;
+    private static boolean googleQuitDuringAccountCreation;
 
     public static void refreshUser(final boolean refreshAllToo) {
         //Setting up database and current user
         mAuth = FirebaseAuth.getInstance();
         currentFirebaseUser = mAuth.getCurrentUser();
+        googleQuitDuringAccountCreation = false;
 
         if (currentFirebaseUser != null) {
             currentUserFound = false;
@@ -69,6 +71,7 @@ public class DBHandler extends Application {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful() && task.getResult() != null) {
+                                boolean isSizeGreaterThan0 = false;
                                 for (DocumentSnapshot userSnapshot : task.getResult()) {
                                     currentUser = userSnapshot.toObject(User.class);
 
@@ -78,8 +81,18 @@ public class DBHandler extends Application {
                                         refreshContractTemplates();
                                     }
                                     refreshFriendsList();
+//                                    Log.e("**DB Handler", "Length is bigger than 0");
+                                    isSizeGreaterThan0 = true;
                                 }
-                                currentUserFound = true;
+                                if (isSizeGreaterThan0) {
+                                    Log.d("**DB Handler", "Current User is Found");
+                                    currentUserFound = true;
+                                } else {
+                                    // No user found in the database, but the user is authenticated. This can only happen when the app is quit after
+                                    // signing up with google and no birthday is entered. Send to birthday screen.
+                                    Log.e("**DB Handler", "User quit app during google authentication, send to login");
+                                    googleQuitDuringAccountCreation = true;
+                                }
                             } else {
                                 declareError();
                             }
@@ -383,5 +396,13 @@ public class DBHandler extends Application {
 
     public static int getRefreshDelay() {
         return refreshDelay;
+    }
+
+    public static boolean isGoogleQuitDuringAccountCreation() {
+        return googleQuitDuringAccountCreation;
+    }
+
+    public static void setGoogleQuitDuringAccountCreation(boolean googleQuitDuringAccountCreation) {
+        DBHandler.googleQuitDuringAccountCreation = googleQuitDuringAccountCreation;
     }
 }
