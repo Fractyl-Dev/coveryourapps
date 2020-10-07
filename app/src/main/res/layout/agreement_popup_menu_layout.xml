@@ -14,13 +14,18 @@
         android:background="@android:color/transparent"
         android:orientation="horizontal">
 
-        <ImageButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/agreementPopupMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/colorPrimary"
+            android:contentDescription="@string/floating_button_content_description"
             android:onClick="closeAgreementPopupMenu"
-            android:layout_gravity="bottom"
-            android:background="@android:color/transparent"
-            android:src="@mipmap/ic_launcher_round" />
+            android:src="@drawable/close_icon_bigger"
+            android:tint="@android:color/transparent" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -32,30 +37,30 @@
 
             <Button
                 android:id="@+id/agreementLendAnItemButton"
-                android:layout_width="wrap_content"
+                android:layout_width="185dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="4dp"
                 android:background="@drawable/rounded_button"
                 android:drawableStart="@drawable/profile_info"
                 android:drawablePadding="10dp"
+                android:onClick="agreementLendAnItemOnClick"
                 android:padding="8dp"
                 android:text="@string/agreement_lend_an_item"
                 android:textAllCaps="false"
-                android:onClick="agreementLendAnItemOnClick"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/agreementCashTransactionButton"
-                android:layout_width="wrap_content"
-                android:onClick="agreementCashTransactionOnClick"
+                android:layout_width="185dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="4dp"
                 android:background="@drawable/rounded_button"
                 android:drawableStart="@drawable/profile_info"
                 android:drawablePadding="10dp"
+                android:onClick="agreementCashTransactionOnClick"
                 android:padding="8dp"
                 android:text="@string/agreement_cash_transaction"
                 android:textAllCaps="false"
@@ -64,14 +69,14 @@
 
             <Button
                 android:id="@+id/agreementNewAgreementButton"
-                android:layout_width="wrap_content"
+                android:layout_width="185dp"
                 android:layout_height="wrap_content"
-                android:onClick="agreementNewAgreementOnClick"
                 android:layout_gravity="center"
                 android:layout_margin="4dp"
                 android:background="@drawable/rounded_button"
                 android:drawableStart="@drawable/profile_info"
                 android:drawablePadding="10dp"
+                android:onClick="agreementNewAgreementOnClick"
                 android:padding="8dp"
                 android:text="@string/agreement_new_agreement"
                 android:textAllCaps="false"
@@ -79,6 +84,7 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
+
     </LinearLayout>
 
 

@@ -29,18 +29,26 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'com.google.firebase:firebase-firestore:21.6.0'
-    implementation 'com.google.gms:google-services:4.3.3'
+    implementation 'com.google.gms:google-services:4.3.4'
     implementation 'com.google.firebase:firebase-auth:19.3.1'
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
     implementation 'com.facebook.android:facebook-login:5.15.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation 'com.google.firebase:firebase-storage:19.1.1'
+    implementation 'com.google.firebase:firebase-storage:19.2.0'
+    implementation 'com.google.firebase:firebase-core:17.5.1'
+    //implementation 'com.google.firebase:firebase.messaging'
+    //implementation 'com.android.tools.build:gradle'
+    //implementation platform('com.google.firebase:firebase-bom:25.12.0')
+    //implementation 'com.google.firebase:firebase-messaging'
+    //implementation 'com.google.firebase:firebase-analytics'
 
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+
 
 }

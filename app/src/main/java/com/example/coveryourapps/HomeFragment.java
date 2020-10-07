@@ -223,9 +223,19 @@ public class HomeFragment extends Fragment {
             coverDropdownButton.setOnClickListener(this);
 
             if (cover.getCoverType().equals("cash")) {
-                coverLogo.setImageResource(R.drawable.cash_icon_medium);
-                coverLogo.setColorFilter(R.color.colorAccent);
-                coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
+                coverLogo.setImageResource(R.drawable.cashx2);
+               // coverLogo.setColorFilter(R.color.colorAccent);
+                //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
+            }
+            if (cover.getCoverType().equals("lending")) {
+                coverLogo.setImageResource(R.drawable.lendingx2);
+               // coverLogo.setColorFilter(R.color.colorAccent);
+              // coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
+            }
+            if (cover.getCoverType().equals("contract")) {
+                coverLogo.setImageResource(R.drawable.contract);
+              //  coverLogo.setColorFilter(R.color.colorAccent);
+                //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
             }
         }
 
