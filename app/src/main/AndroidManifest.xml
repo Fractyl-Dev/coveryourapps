@@ -3,7 +3,6 @@
     android:name=".DBHandler"
     package="com.example.coveryourapps">
 
-    android:minSdkVersion="8"
 
     <uses-permission android:name="android.permission.INTERNET" />
 
