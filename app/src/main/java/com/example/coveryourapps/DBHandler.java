@@ -17,9 +17,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.util.Listener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -80,6 +82,13 @@ public class DBHandler extends Application {
                                         refreshCovers();
                                         refreshContractTemplates();
                                     }
+
+                                    //Refresh notification token
+                                    if (!currentUser.getNotificationTokens().contains(FirebaseInstanceId.getInstance().getToken())) {
+                                        DBHandler.getDB().collection("users").document(currentFirebaseUser.getUid())
+                                                .update("notificationTokens", FieldValue.arrayUnion(FirebaseInstanceId.getInstance().getToken()));
+                                    }
+
                                     refreshFriendsList();
 //                                    Log.e("**DB Handler", "Length is bigger than 0");
                                     isSizeGreaterThan0 = true;
@@ -106,6 +115,8 @@ public class DBHandler extends Application {
     private static int nonFinalSenderResultSize;
     private static int nonFinalRecipientResultSize;
     private static ArrayList<Cover> newAllUserCovers;
+
+
 
     public static void refreshCovers() {
         if (allUserCovers == null) {

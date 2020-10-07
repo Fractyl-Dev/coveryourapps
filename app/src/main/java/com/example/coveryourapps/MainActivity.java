@@ -13,6 +13,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.session.MediaSession;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -34,6 +35,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        Log.d("Token", ""+ FirebaseInstanceId.getInstance().getToken());
         homeFragment = new HomeFragment();
         friendsFragment = new FriendsFragment();
         settingsFragment = new SettingsFragment();
@@ -126,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         refreshLayout.setRefreshing(true);
         onRefreshFinished();
     }
+
     private void onRefreshFinished() {
         new Handler().postDelayed(new Runnable() {
             @Override
