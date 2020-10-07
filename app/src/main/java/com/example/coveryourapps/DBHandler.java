@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.util.Listener;
+
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.Serializable;
@@ -84,6 +85,7 @@ public class DBHandler extends Application {
                                     }
 
                                     //Refresh notification token
+
                                     if (!currentUser.getNotificationTokens().contains(FirebaseInstanceId.getInstance().getToken())) {
                                         DBHandler.getDB().collection("users").document(currentFirebaseUser.getUid())
                                                 .update("notificationTokens", FieldValue.arrayUnion(FirebaseInstanceId.getInstance().getToken()));
