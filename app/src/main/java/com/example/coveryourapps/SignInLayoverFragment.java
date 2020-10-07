@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -157,7 +158,7 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w("**Sign In Layover | Sign In Google", "Google sign in failed", e);
-
+                Toast.makeText(thisActivity, "Google sign in failed, please login with email or try again later.", Toast.LENGTH_SHORT).show();
             }
         } else {
             // Pass the activity result back to the Facebook SDK
@@ -186,6 +187,7 @@ public class SignInLayoverFragment extends Fragment implements View.OnClickListe
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("**Sign In Layover | Firebase Auth", "signInWithCredential:failure", task.getException());
+                            Toast.makeText(thisActivity, "Google sign in failed, please login with email or try again later.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

@@ -66,7 +66,7 @@ public class CashTransactionFragment extends Fragment implements View.OnClickLis
             updateMap.put("coverType", "cash");
             updateMap.put("createdTime", new Timestamp(System.currentTimeMillis()));
             updateMap.put("id", "Useless ID for android");
-            updateMap.put("memo", memo);
+            updateMap.put("memo", memo + " ($" + content + ")");
             updateMap.put("recipientID", recipient.getUid());
             updateMap.put("senderID", DBHandler.getCurrentFirebaseUser().getUid());
             updateMap.put("status", "pending");

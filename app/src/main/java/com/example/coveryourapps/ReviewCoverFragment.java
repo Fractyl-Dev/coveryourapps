@@ -104,7 +104,11 @@ public class ReviewCoverFragment extends Fragment implements View.OnClickListene
 
         @Override
         public int getItemCount() {
-            return this.urls.size();
+            if (urls != null) {
+                return this.urls.size();
+            } else {
+                return 0;
+            }
         }
     }
 
