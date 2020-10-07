@@ -85,10 +85,11 @@ public class DBHandler extends Application {
                                     }
 
                                     //Refresh notification token
-
                                     if (!currentUser.getNotificationTokens().contains(FirebaseInstanceId.getInstance().getToken())) {
                                         DBHandler.getDB().collection("users").document(currentFirebaseUser.getUid())
                                                 .update("notificationTokens", FieldValue.arrayUnion(FirebaseInstanceId.getInstance().getToken()));
+                                        currentUser.getNotificationTokens().add(FirebaseInstanceId.getInstance().getToken());
+
                                     }
 
                                     refreshFriendsList();

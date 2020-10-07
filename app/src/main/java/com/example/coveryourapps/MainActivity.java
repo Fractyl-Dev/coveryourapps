@@ -159,6 +159,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void signOutTemp(View view) {
         FirebaseAuth.getInstance().signOut();//Firebase sign out
 
+        //Get rid of notification token
+        if (DBHandler.getCurrentUser().getNotificationTokens().contains(FirebaseInstanceId.getInstance().getToken())) {
+            DBHandler.getDB().collection("users").document(DBHandler.getCurrentFirebaseUser().getUid())
+                    .update("notificationTokens", FieldValue.arrayRemove(FirebaseInstanceId.getInstance().getToken()));
+        }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
