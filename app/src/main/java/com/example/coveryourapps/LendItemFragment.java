@@ -2,6 +2,7 @@ package com.example.coveryourapps;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -35,6 +36,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -46,6 +48,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.squareup.picasso.Picasso;
+
+import static android.media.ExifInterface.ORIENTATION_NORMAL;
+import static android.media.ExifInterface.TAG_ORIENTATION;
 
 public class LendItemFragment extends Fragment implements View.OnClickListener {
     CoverCreatorActvity thisActivity;//
@@ -271,7 +276,39 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
 
         public void bind(Uri theUrl) {
             this.uri = theUrl;
-            Picasso.get().load(uri).into(this.image);
+
+
+//            Uri realUri = Uri.parse(uri);
+
+            float rotation = 0;
+            try {
+                ExifInterface exifInterface = new ExifInterface(theUrl.getPath());
+                int orientation = exifInterface.getAttributeInt(TAG_ORIENTATION, ORIENTATION_NORMAL);
+
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90: {
+                        rotation = -90f;
+                        break;
+                    }
+                    case ExifInterface.ORIENTATION_ROTATE_180: {
+                        rotation = -180f;
+                        break;
+                    }
+                    case ExifInterface.ORIENTATION_ROTATE_270: {
+                        rotation = 90f;
+                        break;
+                    }
+                }
+                Log.d("**Lend Item Fragment", "Checked image for rotation");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("**Lend Item Fragment", "Image not rotated with exception", e);
+            }
+
+            Picasso.get()
+                    .load(uri)
+                    .rotate(rotation)
+                    .into(this.image);
             deleteButton.setOnClickListener(this);
         }
 
