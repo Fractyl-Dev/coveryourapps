@@ -1,6 +1,9 @@
 package com.example.coveryourapps;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,9 +22,15 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -119,7 +128,6 @@ public class ReviewCoverFragment extends Fragment implements View.OnClickListene
     class ImageViewHolder extends RecyclerView.ViewHolder {
         private ImageView image;
         private ImageButton deleteButton;
-        private String uri;
 
         public ImageViewHolder(ViewGroup container) {
             super(LayoutInflater.from(getContext()).inflate(R.layout.lend_image_item, container, false));
@@ -128,43 +136,48 @@ public class ReviewCoverFragment extends Fragment implements View.OnClickListene
         }
 
         public void bind(String theUrl) {
-            this.uri = theUrl;
-
-//            Uri realUri = Uri.parse(uri);
-
-//            InputStream inputStream = getContext().getContentResolver().openInputStream(realUri)
-            float rotation = 0;
-            try {
-                ExifInterface exifInterface = new ExifInterface(theUrl);
-                String rotationAmount = exifInterface
-                        .getAttribute(ExifInterface.TAG_ORIENTATION);
-                if (!TextUtils.isEmpty(rotationAmount)) {
-                    int rotationParam = Integer.parseInt(rotationAmount);
-                    switch (rotationParam) {
-                        case ExifInterface.ORIENTATION_NORMAL:
-                            rotation = 0;
-                        case ExifInterface.ORIENTATION_ROTATE_90:
-                            rotation = 90;
-                        case ExifInterface.ORIENTATION_ROTATE_180:
-                            rotation = 180;
-                        case ExifInterface.ORIENTATION_ROTATE_270:
-                            rotation = 270;
-                        default:
-                            rotation = 0;
-                    }
-                } else {
-                    rotation = 0;
-                }
-                Log.d("**Lend Item Fragment", "Checked image for rotation");
-            } catch (IOException e) {
-//                e.printStackTrace();
-                Log.e("**Lend Item Fragment", "Image not rotated with exception", e);
-            }
-            Picasso.get()
-                    .load(uri)
-                    .rotate(rotation)
-                    .into(this.image);
             deleteButton.setVisibility(View.GONE);
+
+            //Reference the place where the image is stored in firestore
+            StorageReference httpsReference = FirebaseStorage.getInstance().getReferenceFromUrl(theUrl);
+
+            httpsReference.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                    //Exif stuff is to rotate images that are incorrectly oriented
+                    ExifInterface exifInterface = null;
+                    try {
+                        exifInterface = new ExifInterface(new ByteArrayInputStream(bytes));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+                    Matrix matrix = new Matrix(); // Rotate images that are bad
+                    switch (orientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            matrix.setRotate(90);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            matrix.setRotate(180);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            matrix.setRotate(270);
+                            break;
+                    }
+                    //Make new bitmap that is properly oriented
+                    Bitmap bmRotated = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+
+                    image.setImageBitmap((Bitmap.createBitmap(bmRotated)));
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e("**Review Cover Fragment", "Image not able to be loaded");
+                    Toast.makeText(thisActivity, "Image not able to be loaded", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 }

@@ -1,6 +1,9 @@
 package com.example.coveryourapps;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -35,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -136,7 +140,7 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
                                         .update("friends", FieldValue.arrayUnion(recipient.getUid()));
                             }
 //                            updateMap.put("pictures", FieldValue.arrayUnion(imageURLs));
-                            Log.d("**LendItemFragment |", "Id is " + documentReference.getId());
+//                            Log.d("**LendItemFragment |", "Id is " + documentReference.getId());
                             for (Uri uri : imageURLs) {
                                 DBHandler.getDB().collection("covers").document(documentReference.getId())
                                         .update("pictures", FieldValue.arrayUnion(uri.toString()));
@@ -276,40 +280,49 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
 
         public void bind(Uri theUrl) {
             this.uri = theUrl;
-
-
-//            Uri realUri = Uri.parse(uri);
-
-            float rotation = 0;
-            try {
-                ExifInterface exifInterface = new ExifInterface(theUrl.getPath());
-                int orientation = exifInterface.getAttributeInt(TAG_ORIENTATION, ORIENTATION_NORMAL);
-
-                switch (orientation) {
-                    case ExifInterface.ORIENTATION_ROTATE_90: {
-                        rotation = -90f;
-                        break;
-                    }
-                    case ExifInterface.ORIENTATION_ROTATE_180: {
-                        rotation = -180f;
-                        break;
-                    }
-                    case ExifInterface.ORIENTATION_ROTATE_270: {
-                        rotation = 90f;
-                        break;
-                    }
-                }
-                Log.d("**Lend Item Fragment", "Checked image for rotation");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("**Lend Item Fragment", "Image not rotated with exception", e);
-            }
-
-            Picasso.get()
-                    .load(uri)
-                    .rotate(rotation)
-                    .into(this.image);
             deleteButton.setOnClickListener(this);
+
+
+            //Reference the place where the image is stored in firestore
+            StorageReference httpsReference = FirebaseStorage.getInstance().getReferenceFromUrl(theUrl.toString());
+
+            httpsReference.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                    //Exif stuff is to rotate images that are incorrectly oriented
+                    ExifInterface exifInterface = null;
+                    try {
+                        exifInterface = new ExifInterface(new ByteArrayInputStream(bytes));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+                    Matrix matrix = new Matrix(); // Rotate images that are bad
+                    switch (orientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            matrix.setRotate(90);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            matrix.setRotate(180);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            matrix.setRotate(270);
+                            break;
+                    }
+                    //Make new bitmap that is properly oriented
+                    Bitmap bmRotated = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+
+                    image.setImageBitmap((Bitmap.createBitmap(bmRotated)));
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e("**Review Cover Fragment", "Image not able to be loaded");
+                    Toast.makeText(thisActivity, "Image not able to be loaded", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         @Override
