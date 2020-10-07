@@ -4,6 +4,7 @@ package com.example.coveryourapps;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -203,6 +205,9 @@ public class HomeFragment extends Fragment {
                 coverPeopleTextView.setText(cover.getSender().getName());
                 coverCancelButton.setText(R.string.deny);
                 coverRemindButton.setText(R.string.accept);
+                Drawable draw = ResourcesCompat.getDrawable(getResources(), R.drawable.check_icon_24, null);
+                draw.setTint(ResourcesCompat.getColor(getResources(), R.color.defaultGray, null));
+                coverRemindButton.setCompoundDrawablesWithIntrinsicBounds(null, draw, null, null);
             }
 
             //If status is confirmed, get rid of some buttons
@@ -222,20 +227,23 @@ public class HomeFragment extends Fragment {
             coverRemindButton.setOnClickListener(this);
             coverDropdownButton.setOnClickListener(this);
 
-            if (cover.getCoverType().equals("cash")) {
-                coverLogo.setImageResource(R.drawable.cashx2);
-               // coverLogo.setColorFilter(R.color.colorAccent);
-                //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
-            }
-            if (cover.getCoverType().equals("lending")) {
-                coverLogo.setImageResource(R.drawable.lendingx2);
-               // coverLogo.setColorFilter(R.color.colorAccent);
-              // coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
-            }
-            if (cover.getCoverType().equals("contract")) {
-                coverLogo.setImageResource(R.drawable.contract);
-              //  coverLogo.setColorFilter(R.color.colorAccent);
-                //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
+            //ResourcesCompat.getDrawable(getResources(), R.drawable.check_icon, null) Is the real way to get resources
+            switch (cover.getCoverType()) {
+                case "cash":
+                    coverLogo.setImageResource(R.drawable.cashx2);
+                    // coverLogo.setColorFilter(R.color.colorAccent);
+                    //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
+                    break;
+                case "lending":
+                    coverLogo.setImageResource(R.drawable.lendingx2);
+                    // coverLogo.setColorFilter(R.color.colorAccent);
+                    // coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
+                    break;
+                case "contract":
+                    coverLogo.setImageResource(R.drawable.contract);
+                    //  coverLogo.setColorFilter(R.color.colorAccent);
+                    //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
+                    break;
             }
         }
 

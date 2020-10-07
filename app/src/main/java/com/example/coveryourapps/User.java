@@ -31,9 +31,6 @@ public class User {
         this.name = name;
         this.birthdate = birthdate;
 
-        notificationTokens.add("Test Notification Token");
-        notificationTokens.add("Multiple notification tokens");
-
         // Make Display Name
         FirebaseFirestore displayNamesdb = FirebaseFirestore.getInstance();
         displayNamesdb.collection("displayNames")

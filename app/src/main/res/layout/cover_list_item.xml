@@ -82,7 +82,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -126,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="15dp"
                 android:background="@android:color/transparent"
-                android:drawableTop="@drawable/profile"
+                android:drawableTop="@drawable/close_icon"
                 android:text="@string/cancel" />
 
             <View
@@ -141,7 +141,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="15dp"
                 android:background="@android:color/transparent"
-                android:drawableTop="@drawable/profile"
+                android:drawableTop="@drawable/review_icon"
                 android:text="@string/review" />
 
             <View
@@ -156,7 +156,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="15dp"
                 android:background="@android:color/transparent"
-                android:drawableTop="@drawable/profile"
+                android:drawableTop="@drawable/remind_icon"
                 android:text="@string/remind" />
 
         </LinearLayout>
