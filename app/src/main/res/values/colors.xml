@@ -7,5 +7,7 @@
 
     <color name="cashGreen">#7ECB74</color>
 
+    <color name="defaultGray">#737373</color>
+
     <color name="yourFriendsBackground">#D1D1D1</color>
 </resources>
