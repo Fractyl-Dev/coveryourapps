@@ -134,13 +134,15 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
                             Log.d("**Write A Contract |", "Cover added to DB");
+
                             //Add Recipient to friends list
-                            if (!DBHandler.getAllUserFriends().contains(recipient)) {
-                                DBHandler.getDB().collection("users").document(DBHandler.getCurrentFirebaseUser().getUid())
-                                        .update("friends", FieldValue.arrayUnion(recipient.getUid()));
+                            if (Settings.isAutoAddFriends()) {
+                                if (!DBHandler.getAllUserFriends().contains(recipient)) {
+                                    DBHandler.getDB().collection("users").document(DBHandler.getCurrentFirebaseUser().getUid())
+                                            .update("friends", FieldValue.arrayUnion(recipient.getUid()));
+                                }
                             }
-//                            updateMap.put("pictures", FieldValue.arrayUnion(imageURLs));
-//                            Log.d("**LendItemFragment |", "Id is " + documentReference.getId());
+
                             for (Uri uri : imageURLs) {
                                 DBHandler.getDB().collection("covers").document(documentReference.getId())
                                         .update("pictures", FieldValue.arrayUnion(uri.toString()));

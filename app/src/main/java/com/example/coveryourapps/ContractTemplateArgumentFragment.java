@@ -148,11 +148,15 @@ public class ContractTemplateArgumentFragment extends Fragment implements View.O
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
                             Log.d("**Contract Template Argument |", "Cover added to DB");
+
                             //Add Recipient to friends list
-                            if (!DBHandler.getAllUserFriends().contains(recipient)) {
-                                DBHandler.getDB().collection("users").document(DBHandler.getCurrentFirebaseUser().getUid())
-                                        .update("friends", FieldValue.arrayUnion(recipient.getUid()));
+                            if (Settings.isAutoAddFriends()) {
+                                if (!DBHandler.getAllUserFriends().contains(recipient)) {
+                                    DBHandler.getDB().collection("users").document(DBHandler.getCurrentFirebaseUser().getUid())
+                                            .update("friends", FieldValue.arrayUnion(recipient.getUid()));
+                                }
                             }
+
                             recipientIteration++;
                             if (recipientIteration == thisActivity.getSelectedRecipients().size()) {
                                 refresh();

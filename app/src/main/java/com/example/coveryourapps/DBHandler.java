@@ -343,15 +343,6 @@ public class DBHandler extends Application {
 
     //Getters and setters
 
-
-    public static DBHandler getThisHandler() {
-        return thisHandler;
-    }
-
-    public static void setThisHandler(DBHandler thisHandler) {
-        DBHandler.thisHandler = thisHandler;
-    }
-
     public static ArrayList<Cover> getAllUserCovers() {
         return allUserCovers;
     }

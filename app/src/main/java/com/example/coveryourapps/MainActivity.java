@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.session.MediaSession;
@@ -242,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 changeFragmentLayover(friendsFragment, "friendsFragment");
                 break;
             case R.id.profile_settings:
-                changeFragmentLayover(settingsFragment, "settingsFragment");
+                changeFragmentLayover(settingsFragment, "settingsFragment", true);
                 break;
             case R.id.profile_about:
                 changeFragmentLayover(aboutFragment, "aboutFragment");

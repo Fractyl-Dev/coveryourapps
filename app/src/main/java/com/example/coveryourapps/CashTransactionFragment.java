@@ -77,11 +77,15 @@ public class CashTransactionFragment extends Fragment implements View.OnClickLis
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
                             Log.d("**Cash Transaction Fragment |", "Cover added to DB");
+
                             //Add Recipient to friends list
-                            if (!DBHandler.getAllUserFriends().contains(recipient)) {
-                                DBHandler.getDB().collection("users").document(DBHandler.getCurrentFirebaseUser().getUid())
-                                        .update("friends", FieldValue.arrayUnion(recipient.getUid()));
+                            if (Settings.isAutoAddFriends()) {
+                                if (!DBHandler.getAllUserFriends().contains(recipient)) {
+                                    DBHandler.getDB().collection("users").document(DBHandler.getCurrentFirebaseUser().getUid())
+                                            .update("friends", FieldValue.arrayUnion(recipient.getUid()));
+                                }
                             }
+
                             recipientIteration ++;
                             if (recipientIteration == thisActivity.getSelectedRecipients().size()) {
                                 refresh();

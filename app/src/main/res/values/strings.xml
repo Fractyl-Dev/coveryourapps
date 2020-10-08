@@ -124,5 +124,8 @@
     <string name="create_instructions">If you don\'t have an account, click a button below and one will be made for you.</string>
     <string name="sign_up_quit_early">It appears as if you quit the app before you finished creating an account. Enter your birthday above to create your account, or sign out and start over.</string>
     <string name="sign_out">Sign Out</string>
+    <string name="auto_add_friends">Auto-Add Friends</string>
+    <string name="when_checked_friends_will_be_automatically_added_to_your_friends_list_after_you_send_them_a_cover">When checked, friends will be automatically added to your friends list after you send them a cover</string>
+
 
 </resources>
