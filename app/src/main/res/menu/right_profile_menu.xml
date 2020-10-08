@@ -3,16 +3,16 @@
 
     <group android:checkableBehavior="single"><!-- Can only pick one item in menu -->
         <item android:id="@+id/profile_home"
-            android:icon="@drawable/ic_launcher_background"
+            android:icon="@drawable/home_icon"
             android:title="@string/profile_home"/>
         <item android:id="@+id/profile_friends"
-            android:icon="@drawable/ic_launcher_background"
+            android:icon="@drawable/friends_icon"
             android:title="@string/profile_friends"/>
         <item android:id="@+id/profile_settings"
-            android:icon="@drawable/ic_launcher_background"
+            android:icon="@drawable/settings_icon"
             android:title="@string/profile_settings"/>
         <item android:id="@+id/profile_about"
-            android:icon="@drawable/ic_launcher_background"
+            android:icon="@drawable/profile"
             android:title="@string/profile_about"/>
     </group>
 

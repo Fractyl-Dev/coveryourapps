@@ -238,16 +238,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {//When something is pressed in profile menu
         switch (item.getItemId()) {
             case R.id.profile_home:
-                changeFragmentLayover(homeFragment, "homeFragment");
+                changeFragmentLayover(homeFragment, "homeFragment", false);
                 break;
             case R.id.profile_friends:
-                changeFragmentLayover(friendsFragment, "friendsFragment");
+                changeFragmentLayover(friendsFragment, "friendsFragment", true);
                 break;
             case R.id.profile_settings:
                 changeFragmentLayover(settingsFragment, "settingsFragment", true);
                 break;
             case R.id.profile_about:
-                changeFragmentLayover(aboutFragment, "aboutFragment");
+                changeFragmentLayover(aboutFragment, "aboutFragment", true);
                 break;
         }
         item.setChecked(true);
