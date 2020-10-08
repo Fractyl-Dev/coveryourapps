@@ -28,6 +28,7 @@ public class CashTransactionFragment extends Fragment implements View.OnClickLis
     private CoverCreatorActvity thisActivity;
     private EditText cashAmountEditText, memoEditText;
     private Button continueButton;
+    private boolean sentAlready;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,8 +37,9 @@ public class CashTransactionFragment extends Fragment implements View.OnClickLis
         cashAmountEditText = view.findViewById(R.id.cashAmountEditText);
         memoEditText = view.findViewById(R.id.memoEditText);
         continueButton = view.findViewById(R.id.continueButton);
-
         continueButton.setOnClickListener(this);
+
+        sentAlready = false;
 
         // Inflate the layout for this fragment
         return view;
@@ -45,12 +47,15 @@ public class CashTransactionFragment extends Fragment implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        if (!cashAmountEditText.getText().toString().equals("") && !memoEditText.getText().toString().equals("")) {
-            if (v.getId() == R.id.continueButton) {
-                createAndUploadCover(memoEditText.getText().toString(), cashAmountEditText.getText().toString());
+        if (!sentAlready) {
+            if (!cashAmountEditText.getText().toString().equals("") && !memoEditText.getText().toString().equals("")) {
+                if (v.getId() == R.id.continueButton) {
+                    createAndUploadCover(memoEditText.getText().toString(), cashAmountEditText.getText().toString());
+                    sentAlready = true;
+                }
+            } else {
+                Toast.makeText(thisActivity, "Please fill out both fields", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Toast.makeText(thisActivity, "Please fill out both fields", Toast.LENGTH_SHORT).show();
         }
     }
 

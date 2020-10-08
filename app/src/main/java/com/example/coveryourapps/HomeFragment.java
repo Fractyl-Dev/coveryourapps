@@ -47,6 +47,8 @@ public class HomeFragment extends Fragment {
     private ArrayList<Cover> pendingCovers, confirmedCovers, expiredCovers;
     private TextView pendingNoCoversTextView, confirmedNoCoversTextView, expiredNoCoversTextView;
 
+    private TextView pendingTitleTextView, confirmedTitleTextView, expiredTitleTextView;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -70,6 +72,10 @@ public class HomeFragment extends Fragment {
         confirmedCovers = new ArrayList<>();
         expiredCovers = new ArrayList<>();
 
+        pendingTitleTextView = view.findViewById(R.id.pendingTitleTextView);
+        confirmedTitleTextView = view.findViewById(R.id.confirmedTitleTextView);
+        expiredTitleTextView = view.findViewById(R.id.expiredTitleTextView);
+
         updateCoversUI();//Immediately displays last info saved, only updates when different than before
 //        thisActivity.refreshDB();//Checks for new info and updateCoversUI when finished
         return view;
@@ -85,19 +91,31 @@ public class HomeFragment extends Fragment {
         pendingCovers.clear();
         confirmedCovers.clear();
         expiredCovers.clear();
+        int pendingCount = 0;
+        int confirmedCount = 0;
+        int expiredCount = 0;
+
         for (Cover cover : DBHandler.getAllUserCovers()) {
             switch (cover.getStatus()) {
                 case "pending":
                     pendingCovers.add(cover);
+                    pendingCount ++;
                     break;
                 case "confirmed":
                     confirmedCovers.add(cover);
+                    confirmedCount ++;
                     break;
                 case "expired":
                     expiredCovers.add(cover);
+                    expiredCount ++;
                     break;
             }
         }
+        //Change count
+        pendingTitleTextView.setText("Pending ("+pendingCount+")");
+        confirmedTitleTextView.setText("Confirmed ("+confirmedCount+")");
+        expiredTitleTextView.setText("Expired ("+expiredCount+")");
+
 
         //If it's empty, display no covers text
         if (pendingCovers.size() != 0) {
@@ -217,8 +235,7 @@ public class HomeFragment extends Fragment {
                 coverCancelSeparator.setVisibility(View.GONE);
                 coverRemindSeparator.setVisibility(View.GONE);
             }
-//                }
-//            }
+
             coverTypeTextView.setText(cover.getMemo());
             coverTimeAgoTextView.setText(calculateTimeFromCreation(cover.getCreatedTime()));
 

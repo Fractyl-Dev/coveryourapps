@@ -53,7 +53,7 @@
     <string name="email_sign_in">Email</string>
 
     <!--Home Fragment-->
-    <string name="pending">Pending</string>
+    <string name="pending">Pending (0)</string>
     <string name="cover_logo">Cover Logo</string>
     <string name="cover_type_default_text">Cover type default text</string>
     <string name="status_default_text">Status default text</string>
@@ -63,8 +63,8 @@
     <string name="cancel">Cancel</string>
     <string name="review">Review</string>
     <string name="remind">Remind</string>
-    <string name="confirmed">Confirmed</string>
-    <string name="expired">Expired</string>
+    <string name="confirmed">Confirmed (0)</string>
+    <string name="expired">Expired (0)</string>
     <string name="clear">Clear</string>
     <string name="sent_to">Sent to:</string>
     <string name="received_from">Received From:</string>

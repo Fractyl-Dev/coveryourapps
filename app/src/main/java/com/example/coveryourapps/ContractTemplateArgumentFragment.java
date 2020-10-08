@@ -41,6 +41,8 @@ public class ContractTemplateArgumentFragment extends Fragment implements View.O
     private static EditText argumentResponse, electronicSignature;
     private Button continueButton;
 
+    private boolean sentAlready;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         thisActivity = (CoverCreatorActvity) getActivity();
@@ -56,6 +58,7 @@ public class ContractTemplateArgumentFragment extends Fragment implements View.O
 
         updateUI();
 
+        sentAlready = false;
 
         // Inflate the layout for this fragment
         return view;
@@ -91,10 +94,13 @@ public class ContractTemplateArgumentFragment extends Fragment implements View.O
                 thisActivity.setContractTemplateArgumentsIteration(thisActivity.getContractTemplateArgumentsIteration() + 1);
                 updateUI();
             } else {
-                if (!electronicSignature.getText().toString().equals("")) {
-                    createAndUploadCover(thisActivity.getCurrentContractTemplate().getTitle(), mergeTemplateAndResponses());
-                } else {
-                    Toast.makeText(getContext(), "Please write your electronic signature", Toast.LENGTH_SHORT).show();
+                if (!sentAlready) {
+                    if (!electronicSignature.getText().toString().equals("")) {
+                        createAndUploadCover(thisActivity.getCurrentContractTemplate().getTitle(), mergeTemplateAndResponses());
+                        sentAlready = true;
+                    } else {
+                        Toast.makeText(getContext(), "Please write your electronic signature", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }

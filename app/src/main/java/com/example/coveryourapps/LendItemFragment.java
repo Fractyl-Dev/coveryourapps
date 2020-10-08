@@ -66,6 +66,8 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
 
     private ImageView testImage;
 
+    private boolean sentAlready;
+
     public static final int PICK_IMAGE = 1;
 
     @Override
@@ -88,6 +90,7 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
         imagesRecyclerView.setLayoutManager(horizontalLayout);
         imagesRecyclerView.setAdapter(new LendItemFragment.ImagesAdapter(imageURLs));
 
+        sentAlready = false;
 
         // Inflate the layout for this fragment
         return view;
@@ -103,10 +106,13 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
                 getReturnDate();
                 break;
             case R.id.continueButton:
-                if (!itemNameEditText.getText().toString().equals("") || !memoEditText.getText().toString().equals("")) {
+                if (!sentAlready) {
+                    if (!itemNameEditText.getText().toString().equals("") || !memoEditText.getText().toString().equals("")) {
                         createAndUploadCover(itemNameEditText.getText().toString(), memoEditText.getText().toString());
-                } else {
-                    Toast.makeText(thisActivity, "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                        sentAlready = true;
+                    } else {
+                        Toast.makeText(thisActivity, "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
         }
