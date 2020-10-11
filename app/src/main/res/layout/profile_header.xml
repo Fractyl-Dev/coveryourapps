@@ -72,12 +72,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@android:color/transparent"
-            android:drawableStart="@drawable/profile_info"
+
             android:drawablePadding="10dp"
-            android:onClick="setToProfileInformationFragment"
-            android:text="@string/profile_information"
+            android:text="Cover Your Apps"
             android:textAllCaps="false"
-            android:textSize="18sp"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <View

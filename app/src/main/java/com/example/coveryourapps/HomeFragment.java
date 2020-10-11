@@ -34,11 +34,14 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class HomeFragment extends Fragment {
@@ -313,26 +316,19 @@ public class HomeFragment extends Fragment {
                     Log.d("**HomeFragment | ", "Cover Review Button pressed");
                     break;
                 case R.id.coverRemindButton:
-                    if (!isSender) {
-                        DBHandler.getDB().collection("covers")
-                                .document(cover.getDocID())
-                                .update("status", "confirmed")
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("**Home Fragment |", "Cover " + cover.getDocID() + " set to confirmed in DB");
-                                        thisActivity.refreshCovers();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("**Home Fragment |", "Cover failed to be set to confirmed");
-                                        Toast.makeText(thisActivity, "An error occurred, please try again later.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
+
+                        Map<String, Object> updateMap = new HashMap<>();
+                        updateMap.put("remind",cover.getDocID());
+                        updateMap.put("time", new Timestamp(System.currentTimeMillis()));
+
+
+                        DBHandler.getDB().collection("reminders")
+                                .add(updateMap);
+
+                        Toast.makeText(thisActivity, "Reminder Sent", Toast.LENGTH_SHORT).show();
+
                     break;
+
                 case R.id.coverDropdownButton:
                     calculateDropdown();
                     break;
