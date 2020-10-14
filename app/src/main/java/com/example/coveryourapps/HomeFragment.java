@@ -36,6 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,6 +50,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView pendingCoversRecyclerView, confirmedCoversRecyclerView, expiredCoversRecyclerView;
     private ArrayList<Cover> pendingCovers, confirmedCovers, expiredCovers;
     private TextView pendingNoCoversTextView, confirmedNoCoversTextView, expiredNoCoversTextView;
+    private static FirebaseFirestore notificationsDB;
 
     private TextView pendingTitleTextView, confirmedTitleTextView, expiredTitleTextView;
 
@@ -316,19 +318,15 @@ public class HomeFragment extends Fragment {
                     Log.d("**HomeFragment | ", "Cover Review Button pressed");
                     break;
                 case R.id.coverRemindButton:
-
                         Map<String, Object> updateMap = new HashMap<>();
                         updateMap.put("remind",cover.getDocID());
                         updateMap.put("time", new Timestamp(System.currentTimeMillis()));
 
-
-                        DBHandler.getDB().collection("reminders")
+                        notificationsDB.collection("reminders")
                                 .add(updateMap);
 
                         Toast.makeText(thisActivity, "Reminder Sent", Toast.LENGTH_SHORT).show();
-
                     break;
-
                 case R.id.coverDropdownButton:
                     calculateDropdown();
                     break;

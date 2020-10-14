@@ -399,6 +399,9 @@ public class DBHandler extends Application {
         DBHandler.currentFirebaseUser = currentFirebaseUser;
     }
 
+  //  public static
+
+
     public static int getRefreshDelay() {
         return refreshDelay;
     }
