@@ -5,7 +5,7 @@
     android:background="@color/colorAccent"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:paddingHorizontal="16dp"
+    android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Light">
 
 
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="55dp">
+        android:paddingTop="40dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,42 +57,34 @@
         android:id="@+id/piButtonLineHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:orientation="vertical">
 
-        <LinearLayout
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_gravity="center"
+            android:background="@android:color/black" />
+
+        <Button
+            android:id="@+id/piButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:drawableStart="@drawable/profile_info"
+            android:drawablePadding="10dp"
+            android:onClick="setToProfileInformationFragment"
+            android:text="@string/profile_information"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.6dp"
-                android:layout_gravity="center"
-                android:background="@android:color/black" />
-
-            <Button
-                android:id="@+id/piButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
-                android:drawableStart="@drawable/profile_info"
-                android:drawablePadding="10dp"
-                android:onClick="setToProfileInformationFragment"
-                android:text="@string/profile_information"
-                android:textAllCaps="false"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.6dp"
-                android:layout_gravity="center"
-                android:background="@android:color/black" />
-        </LinearLayout>
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_gravity="center"
+            android:background="@android:color/black" />
     </LinearLayout>
 
 

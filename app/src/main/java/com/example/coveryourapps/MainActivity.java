@@ -222,17 +222,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     //This is seperate from onNavigationItemSelected method because it's not a menu item, it's in the nav header
-    public void setToProfileInformationFragment(View view) {
+   // public void setToProfileInformationFragment(View view) {
         //Change fragment to profile information
-        changeFragmentLayover(profileInformationFragment, "profileInformationFragment");
+    //    changeFragmentLayover(profileInformationFragment, "profileInformationFragment");
         //Uncheck all other menus
-        for (int i = 0; i < profileView.getMenu().size(); i++) {
-            profileView.getMenu().getItem(i).setChecked(false);
-        }
+    //    for (int i = 0; i < profileView.getMenu().size(); i++) {
+    //        profileView.getMenu().getItem(i).setChecked(false);
+     //   }
 
-        piButtonHolder.setBackgroundColor(getResources().getColor(R.color.menuBackgroundColor));
-        drawerLayout.closeDrawer(GravityCompat.END);
-    }
+       // piButtonHolder.setBackgroundColor(getResources().getColor(R.color.menuBackgroundColor));
+        //drawerLayout.closeDrawer(GravityCompat.END);
+   // }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {//When something is pressed in profile menu
@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void goBack() {
         if (displayedFragment.equals("reviewCoverFragment")
-                || displayedFragment.equals("profileInformationFragment")
+             //   || displayedFragment.equals("profileInformationFragment")
                 || displayedFragment.equals("friendsFragment")
                 || displayedFragment.equals("settingsFragment")
                 || displayedFragment.equals("aboutFragment")) {
@@ -366,13 +366,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.aboutFragment = aboutFragment;
     }
 
-    public Fragment getProfileInformationFragment() {
-        return profileInformationFragment;
-    }
+    //public Fragment getProfileInformationFragment() {
+       // return profileInformationFragment;
+    //}
 
-    public void setProfileInformationFragment(Fragment profileInformationFragment) {
-        this.profileInformationFragment = profileInformationFragment;
-    }
+    //public void setProfileInformationFragment(Fragment profileInformationFragment) {
+    //    this.profileInformationFragment = profileInformationFragment;
+    //}
 
     public Fragment getReviewCoverFragment() {
         return reviewCoverFragment;

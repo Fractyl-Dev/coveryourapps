@@ -5,11 +5,12 @@
     android:padding="10dp" >
     <ImageView
         android:src="@mipmap/ic_launcher"
-        android:id="@+id/image"
+        android:id="@+id/imagen"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
-        android:layout_marginRight="10dp" />
+        android:layout_marginRight="10dp"
+        />
     <TextView
         android:textSize="13dp"
         android:textColor="#000"
@@ -22,7 +23,7 @@
     <TextView
         android:textSize="13dp"
         android:textColor="#000"
-        android:text="Testing is awecome"
+        android:text="Cover Your Apps"
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
