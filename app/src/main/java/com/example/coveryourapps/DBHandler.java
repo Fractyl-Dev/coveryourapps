@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.util.Listener;
 
@@ -132,6 +133,7 @@ public class DBHandler extends Application {
         nonFinalRecipientIteration = 0;
         //Populate all covers sent by you
         DB.collection("covers")
+                .orderBy("createdTime", Query.Direction.ASCENDING)
                 .whereEqualTo("senderID", currentFirebaseUser.getUid())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -181,6 +183,7 @@ public class DBHandler extends Application {
 
         //Populate all covers you've received
         DB.collection("covers")
+                .orderBy("createdTime", Query.Direction.ASCENDING)
                 .whereEqualTo("recipientID", currentFirebaseUser.getUid())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
