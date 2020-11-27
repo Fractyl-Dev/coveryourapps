@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/agreementPopupMenuLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -23,13 +24,15 @@
                 android:id="@+id/agreementPopupMenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
+                android:layout_gravity="left|bottom"
                 android:layout_margin="16dp"
                 android:backgroundTint="@color/colorPrimary"
                 android:contentDescription="@string/floating_button_content_description"
                 android:onClick="closeAgreementPopupMenu"
                 android:src="@drawable/close_icon_bigger"
-                android:tint="@android:color/transparent" />
+                android:tint="@android:color/transparent"
+                app:borderWidth="0dp"
+                app:hoveredFocusedTranslationZ="6dp" />
         </LinearLayout>
 
         <LinearLayout

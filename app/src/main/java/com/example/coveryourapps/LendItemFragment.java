@@ -237,10 +237,10 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-       if(requestCode == CAMERA_REQUEST_CODE){
+   /*    if(requestCode == CAMERA_REQUEST_CODE){
            Bitmap image = (Bitmap) data.getExtras().get("data");
        }
-
+*/
         if (requestCode == PICK_IMAGE) {
             if (data == null) {
                 Toast.makeText(thisActivity, "Image not able to be processed, please try again.", Toast.LENGTH_SHORT).show();

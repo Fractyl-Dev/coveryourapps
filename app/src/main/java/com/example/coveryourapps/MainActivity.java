@@ -201,9 +201,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         view = getLayoutInflater().inflate(R.layout.agreement_popup_menu_layout, null);
 
-       // floatingActionButton.addOnHideAnimationListener();
+       floatingActionButton.hide();
 
         //Dialog builder
+        builder.setCancelable(false);
         builder.setView(view);
         dialog = builder.create();// Creating the dialog object that pops up
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -221,6 +222,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.dismiss();
         floatingActionButton.show();
     }
+
+
 
 
     //This is seperate from onNavigationItemSelected method because it's not a menu item, it's in the nav header
