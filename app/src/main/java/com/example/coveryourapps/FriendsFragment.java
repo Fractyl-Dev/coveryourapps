@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -32,11 +33,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
-public class FriendsFragment extends Fragment {
+public class FriendsFragment extends Fragment implements View.OnClickListener{
     MainActivity thisActivity;
     RecyclerView friendsRecyclerView;
     EditText usernameSearch;
     ArrayList<User> yourFriends;
+    TextView noFriendsTextView;
 
     @Nullable
     @Override
@@ -44,20 +46,23 @@ public class FriendsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
         thisActivity = (MainActivity) getActivity();
 
+        noFriendsTextView = view.findViewById(R.id.noFriendsTextView);
         friendsRecyclerView = view.findViewById(R.id.friendsRecyclerView);
         usernameSearch = view.findViewById(R.id.usernameSearch);
-        usernameSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    performUsernameSearch(v.getText().toString());
-                    return true;
-                }
-                return false;
-            }
-        });
+        usernameSearch.setOnClickListener(this);
+//        usernameSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                Toast.makeText(thisActivity, "EEE", Toast.LENGTH_SHORT).show();
+//                if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//                    performUsernameSearch(v.getText().toString());
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
         friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         yourFriends = new ArrayList<>();
@@ -72,7 +77,14 @@ public class FriendsFragment extends Fragment {
             yourFriends.clear();
             yourFriends.addAll(DBHandler.getAllUserFriends());
 
-            friendsRecyclerView.setAdapter(new FriendsFragment.UsersAdapter(yourFriends));
+            if (yourFriends.isEmpty()) {
+                friendsRecyclerView.setVisibility(View.GONE);
+                noFriendsTextView.setVisibility(View.VISIBLE);
+            } else {
+                noFriendsTextView.setVisibility(View.GONE);
+                friendsRecyclerView.setVisibility(View.VISIBLE);
+                friendsRecyclerView.setAdapter(new FriendsFragment.UsersAdapter(yourFriends));
+            }
         }
     }
 
@@ -111,6 +123,13 @@ public class FriendsFragment extends Fragment {
                     }
                 });
         usernameSearch.setText("");
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.usernameSearch) {
+            thisActivity.changeFragmentLayover(thisActivity.getSearchFragment(), "searchFragment", true);
+        }
     }
 
 

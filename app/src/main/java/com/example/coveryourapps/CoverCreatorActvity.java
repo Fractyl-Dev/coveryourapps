@@ -246,6 +246,7 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
                             changeCoverCreatorLayover(cashTransactionFragment, "cashTransactionFragment");
                         } else if (selectedCover.equals("Lend an Item")) {
                             toolbarTopText.setText(R.string.lend_an_item);
+                            toolbarBackButton.setImageResource(R.drawable.back_arrow);
                             toolbarNextButton.setVisibility(View.GONE);
                             changeCoverCreatorLayover(lendItemFragment, "lendItemFragment");
                         }

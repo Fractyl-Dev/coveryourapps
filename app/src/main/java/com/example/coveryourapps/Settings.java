@@ -19,7 +19,6 @@ public class Settings extends Application {
         return thisSettings;
     }
 
-
     public static void setAutoAddFriends(MainActivity mainActivity) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mainActivity);
         autoAddFriends = prefs.getBoolean("autoAddFriends", true);

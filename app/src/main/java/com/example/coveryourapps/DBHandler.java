@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,9 +28,13 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class DBHandler extends Application {
     private static DBHandler thisHandler;
@@ -48,6 +53,8 @@ public class DBHandler extends Application {
     private static ArrayList<Cover> allUserCovers;
     private static ArrayList<User> allUserFriends;
     private static ArrayList<ContractTemplate> allContractTemplates;
+    //    private static Set<User> allUsers;
+    private static HashSet<User> allUsers;
 
     private static FirebaseFirestore DB;
     private static User currentUser;
@@ -56,7 +63,7 @@ public class DBHandler extends Application {
 
     private static int refreshDelay = 100;
 
-    private static boolean currentUserFound, sentCoversChecked, receivedCoversChecked, friendsChecked, contractTemplatesChecked;
+    private static boolean currentUserFound, sentCoversChecked, receivedCoversChecked, friendsChecked, allUsersChecked, contractTemplatesChecked;
     private static boolean googleQuitDuringAccountCreation;
 
     public static void refreshUser(final boolean refreshAllToo) {
@@ -83,6 +90,7 @@ public class DBHandler extends Application {
                                     if (refreshAllToo) {
                                         refreshCovers();
                                         refreshContractTemplates();
+                                        refreshAllUsers();
                                     }
 
                                     //Refresh notification token
@@ -90,7 +98,6 @@ public class DBHandler extends Application {
                                         DBHandler.getDB().collection("users").document(currentFirebaseUser.getUid())
                                                 .update("notificationTokens", FieldValue.arrayUnion(FirebaseInstanceId.getInstance().getToken()));
                                         currentUser.getNotificationTokens().add(FirebaseInstanceId.getInstance().getToken());
-
                                     }
 
                                     refreshFriendsList();
@@ -119,7 +126,6 @@ public class DBHandler extends Application {
     private static int nonFinalSenderResultSize;
     private static int nonFinalRecipientResultSize;
     private static ArrayList<Cover> newAllUserCovers;
-
 
 
     public static void refreshCovers() {
@@ -259,11 +265,34 @@ public class DBHandler extends Application {
                         });
             }
         } else {
-            Log.d("DBHandler |", "No Friends Found, FriendsChecked to true");
+            Log.d("**DBHandler |", "No Friends Found, FriendsChecked to true");
             friendsChecked = true;
         }
 
 
+    }
+
+    public static void refreshAllUsers() {
+        allUsersChecked = false;
+        allUsers = new HashSet<>();
+        DB.collection("users")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            for (DocumentSnapshot usersSnapshot : task.getResult()) {
+                                User user = usersSnapshot.toObject(User.class);
+
+                                allUsers.add(user);
+                            }
+                            Log.d("**DB Handler |", "AllUsersChecked to true");
+                            allUsersChecked = true;
+                        } else {
+                            declareError();
+                        }
+                    }
+                });
     }
 
     public static void refreshContractTemplates() {
@@ -315,7 +344,7 @@ public class DBHandler extends Application {
     }
 
     public static boolean checkIfDoneThinking() {
-        if (currentUserFound && sentCoversChecked && receivedCoversChecked && friendsChecked && contractTemplatesChecked) {
+        if (currentUserFound && sentCoversChecked && receivedCoversChecked && friendsChecked && allUsersChecked && contractTemplatesChecked) {
             //Check what covers were already there, record their dropdown value
             for (Cover oldCover : allUserCovers) {
                 for (Cover newCover : newAllUserCovers) {
@@ -368,6 +397,10 @@ public class DBHandler extends Application {
 
     public static void setAllContractTemplates(ArrayList<ContractTemplate> allContractTemplates) {
         DBHandler.allContractTemplates = allContractTemplates;
+    }
+
+    public static HashSet<User> getAllUsers() {
+        return allUsers;
     }
 
     public static FirebaseFirestore getDB() {

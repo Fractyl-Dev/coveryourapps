@@ -45,7 +45,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private HomeFragment homeFragment;
     private FriendsFragment friendsFragment;
-    private Fragment settingsFragment, aboutFragment, profileInformationFragment, reviewCoverFragment;
+    private Fragment settingsFragment, aboutFragment, reviewCoverFragment, searchFragment;
     private String displayedFragment;
     private DrawerLayout drawerLayout;
     private NavigationView profileView;
@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         friendsFragment = new FriendsFragment();
         settingsFragment = new SettingsFragment();
         aboutFragment = new AboutFragment();
-        profileInformationFragment = new ProfileInformationFragment();
         reviewCoverFragment = new ReviewCoverFragment();
+        searchFragment = new SearchFragment();
 
         floatingActionButton = findViewById(R.id.agreementPopupMenu);
 
@@ -258,8 +258,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
             drawerLayout.closeDrawer(GravityCompat.END);
         } else {
-            //super.onBackPressed();
-
             goBack();
         }
     }
@@ -267,12 +265,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void goBack() {
         if (displayedFragment.equals("reviewCoverFragment")
-             //   || displayedFragment.equals("profileInformationFragment")
                 || displayedFragment.equals("friendsFragment")
                 || displayedFragment.equals("settingsFragment")
                 || displayedFragment.equals("aboutFragment")) {
             changeFragmentLayover(getHomeFragment(), "homeFragment", false);
             profileView.setCheckedItem(R.id.profile_home);
+        } else if (displayedFragment.equals("searchFragment")) {
+            changeFragmentLayover(getFriendsFragment(), "friendsFragment", true);
         }
     }
 
@@ -368,5 +367,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setReviewCoverFragment(Fragment reviewCoverFragment) {
         this.reviewCoverFragment = reviewCoverFragment;
+    }
+
+    public Fragment getSearchFragment() {
+        return searchFragment;
+    }
+
+    public void setSearchFragment(Fragment searchFragment) {
+        this.searchFragment = searchFragment;
     }
 }
