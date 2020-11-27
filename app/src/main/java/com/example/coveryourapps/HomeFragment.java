@@ -36,6 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,6 +50,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView pendingCoversRecyclerView, confirmedCoversRecyclerView, expiredCoversRecyclerView;
     private ArrayList<Cover> pendingCovers, confirmedCovers, expiredCovers;
     private TextView pendingNoCoversTextView, confirmedNoCoversTextView, expiredNoCoversTextView;
+    private static FirebaseFirestore notificationsDB;
 
     private TextView pendingTitleTextView, confirmedTitleTextView, expiredTitleTextView;
 
@@ -267,17 +269,17 @@ public class HomeFragment extends Fragment {
             //ResourcesCompat.getDrawable(getResources(), R.drawable.check_icon, null) Is the real way to get resources
             switch (cover.getCoverType()) {
                 case "cash":
-                    coverLogo.setImageResource(R.drawable.cashx2);
+                    coverLogo.setImageResource(R.drawable.cashx);
                     // coverLogo.setColorFilter(R.color.colorAccent);
                     //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
                     break;
                 case "lending":
-                    coverLogo.setImageResource(R.drawable.lendingx2);
+                    coverLogo.setImageResource(R.drawable.lendingx);
                     // coverLogo.setColorFilter(R.color.colorAccent);
                     // coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
                     break;
                 case "contract":
-                    coverLogo.setImageResource(R.drawable.contract);
+                    coverLogo.setImageResource(R.drawable.contractx);
                     //  coverLogo.setColorFilter(R.color.colorAccent);
                     //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
                     break;
@@ -333,19 +335,15 @@ public class HomeFragment extends Fragment {
                     Log.d("**HomeFragment | ", "Cover Review Button pressed");
                     break;
                 case R.id.coverRemindButton:
-
                         Map<String, Object> updateMap = new HashMap<>();
                         updateMap.put("remind",cover.getDocID());
                         updateMap.put("time", new Timestamp(System.currentTimeMillis()));
 
-
-                        DBHandler.getDB().collection("reminders")
+                        notificationsDB.collection("reminders")
                                 .add(updateMap);
 
                         Toast.makeText(thisActivity, "Reminder Sent", Toast.LENGTH_SHORT).show();
-
                     break;
-
                 case R.id.coverDropdownButton:
                     calculateDropdown();
                     break;

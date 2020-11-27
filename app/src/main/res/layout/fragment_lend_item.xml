@@ -89,7 +89,17 @@
                     android:layout_marginHorizontal="10dp"
                     android:background="@android:color/transparent"
                     android:drawableBottom="@drawable/check_icon"
-                    android:text="@string/upload_image"
+                    android:text="Upload Photo"
+                    android:textAllCaps="false" />
+
+                <Button
+                    android:id="@+id/takeImageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:background="@android:color/transparent"
+                    android:drawableBottom="@drawable/camera"
+                    android:text="Camera"
                     android:textAllCaps="false" />
 
                 <Button

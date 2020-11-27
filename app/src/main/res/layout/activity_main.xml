@@ -61,10 +61,15 @@
                     android:src="@drawable/fab_plus"
                     android:tint="@android:color/transparent" />
 
+
+
+
             </FrameLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+
     </LinearLayout>
+
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/profile_view"

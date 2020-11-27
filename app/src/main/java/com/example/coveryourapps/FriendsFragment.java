@@ -3,7 +3,10 @@ package com.example.coveryourapps;
 //import android.support.v4.fr
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -12,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -39,6 +43,8 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
     EditText usernameSearch;
     ArrayList<User> yourFriends;
     TextView noFriendsTextView;
+    private Button inviteFriendsButton;
+
 
     @Nullable
     @Override
@@ -47,6 +53,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         thisActivity = (MainActivity) getActivity();
 
         noFriendsTextView = view.findViewById(R.id.noFriendsTextView);
+        inviteFriendsButton = view.findViewById(R.id.inviteFriendsButton);
         friendsRecyclerView = view.findViewById(R.id.friendsRecyclerView);
         usernameSearch = view.findViewById(R.id.usernameSearch);
         usernameSearch.setOnClickListener(this);
@@ -71,6 +78,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
 
         return view;
     }
+
 
     public void updateFriendsUI() {
         if (yourFriends != null) {
@@ -186,6 +194,34 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
             friendTrashButton.setOnClickListener(this);
             trashCheckButton.setOnClickListener(this);
             trashCancelButton.setOnClickListener(this);
+            inviteFriendsButton.setOnClickListener(this);
+        }
+
+        private void sendSMS() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // At least KitKat
+            {
+                String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(thisActivity); // Need to change the build to API 19
+
+                Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.setType("text/plain");
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Download CYA Today: Add link ");
+
+                if (defaultSmsPackageName != null)// Can be null in case that there is no default, then the user would be able to choose
+                // any app that support this intent.
+                {
+                    sendIntent.setPackage(defaultSmsPackageName);
+                }
+                startActivity(sendIntent);
+
+            }
+            else // For early versions, do what worked for you before.
+            {
+                Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
+                smsIntent.setType("vnd.android-dir/mms-sms");
+                smsIntent.putExtra("address","phoneNumber");
+                smsIntent.putExtra("sms_body","Download CYA Today: Add link");
+                startActivity(smsIntent);
+            }
         }
 
         @Override
@@ -205,6 +241,9 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                 case R.id.trashCancelButton:
                     trashConfirmLayout.setVisibility(View.GONE);
                     trashButtonLayout.setVisibility(View.VISIBLE);
+                    break;
+                case R.id.inviteFriendsButton:
+                    sendSMS();
                     break;
             }
         }

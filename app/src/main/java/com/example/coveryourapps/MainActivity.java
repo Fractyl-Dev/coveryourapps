@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     AlertDialog dialog;
 
 
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         searchFragment = new SearchFragment();
 
         floatingActionButton = findViewById(R.id.agreementPopupMenu);
+
 
         //Top Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -199,7 +201,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         view = getLayoutInflater().inflate(R.layout.agreement_popup_menu_layout, null);
 
+       floatingActionButton.hide();
+
         //Dialog builder
+        builder.setCancelable(false);
         builder.setView(view);
         dialog = builder.create();// Creating the dialog object that pops up
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -215,7 +220,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void closeAgreementPopupMenu(View view) {
         dialog.dismiss();
+        floatingActionButton.show();
     }
+
+
 
 
     //This is seperate from onNavigationItemSelected method because it's not a menu item, it's in the nav header
