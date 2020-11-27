@@ -2,6 +2,9 @@ package com.example.coveryourapps;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.Telephony;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -40,7 +44,7 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
 
     private LinearLayout selectedRecipientsInfo;
     private TextView selectedRecipientsTextView, noFriendsTextView;
-    private Button selectedRecipientsClearButton;
+    private Button selectedRecipientsClearButton, inviteFriendsButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,8 +71,10 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
         selectedRecipientsInfo = view.findViewById(R.id.selectedRecipientsInfo);
         selectedRecipientsTextView = view.findViewById(R.id.selectedRecipientsTextView);
         noFriendsTextView = view.findViewById(R.id.noFriendsTextView);
+        inviteFriendsButton = view.findViewById(R.id.inviteFriendsButton);
         selectedRecipientsClearButton = view.findViewById(R.id.selectedRecipientsClearButton);
         selectedRecipientsClearButton.setOnClickListener(this);
+        inviteFriendsButton.setOnClickListener(this);
 
 
         //Populate friends in the UI
@@ -112,11 +118,37 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
                 Log.d("**Choose Recipients Fragment |", "Cleared selected recipients");
                 break;
             case R.id.inviteFriendsButton:
-
+              sendSMS();
                 break;
         }
     }
 
+    private void sendSMS() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // At least KitKat
+        {
+            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(thisActivity); // Need to change the build to API 19
+
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.setType("text/plain");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "Download CYA Today: Add link ");
+
+            if (defaultSmsPackageName != null)// Can be null in case that there is no default, then the user would be able to choose
+            // any app that support this intent.
+            {
+                sendIntent.setPackage(defaultSmsPackageName);
+            }
+            startActivity(sendIntent);
+
+        }
+        else // For early versions, do what worked for you before.
+        {
+            Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
+            smsIntent.setType("vnd.android-dir/mms-sms");
+            smsIntent.putExtra("address","phoneNumber");
+            smsIntent.putExtra("sms_body","Download CYA Today: Add link");
+            startActivity(smsIntent);
+        }
+    }
 
     class UsersAdapter extends RecyclerView.Adapter<ChooseRecipientsFragment.FriendViewHolder> {
         private ArrayList<User> yourFriends;
