@@ -68,9 +68,25 @@ public class HomeFragment extends Fragment {
         confirmedNoCoversTextView = view.findViewById(R.id.confirmedNoCoversTextView);
         expiredNoCoversTextView = view.findViewById(R.id.expiredNoCoversTextView);
 
-        pendingCoversRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        confirmedCoversRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        expiredCoversRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        //Overriding gets rid of the weird animations within recyclerviews when you scroll
+        pendingCoversRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically(){
+                return false;
+            }
+        });
+        confirmedCoversRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically(){
+                return false;
+            }
+        });
+        expiredCoversRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically(){
+                return false;
+            }
+        });
 
 
         pendingCovers = new ArrayList<>();
@@ -96,6 +112,7 @@ public class HomeFragment extends Fragment {
         pendingCovers.clear();
         confirmedCovers.clear();
         expiredCovers.clear();
+        ArrayList<Cover> pendingCoverTop3 = new ArrayList<>();
         int pendingCount = 0;
         int confirmedCount = 0;
         int expiredCount = 0;

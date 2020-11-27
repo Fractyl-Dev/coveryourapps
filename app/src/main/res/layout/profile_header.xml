@@ -52,39 +52,4 @@
         </LinearLayout>
 
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/piButtonLineHolder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.6dp"
-            android:layout_gravity="center"
-            android:background="@android:color/black" />
-
-        <Button
-            android:id="@+id/piButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@android:color/transparent"
-
-            android:drawablePadding="10dp"
-            android:text="Cover Your Apps"
-            android:textAllCaps="false"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.6dp"
-            android:layout_gravity="center"
-            android:background="@android:color/black" />
-    </LinearLayout>
-
-
 </LinearLayout>
