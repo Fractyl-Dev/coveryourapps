@@ -269,17 +269,17 @@ public class HomeFragment extends Fragment {
             //ResourcesCompat.getDrawable(getResources(), R.drawable.check_icon, null) Is the real way to get resources
             switch (cover.getCoverType()) {
                 case "cash":
-                    coverLogo.setImageResource(R.drawable.cashx2);
+                    coverLogo.setImageResource(R.drawable.cashx);
                     // coverLogo.setColorFilter(R.color.colorAccent);
                     //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
                     break;
                 case "lending":
-                    coverLogo.setImageResource(R.drawable.lendingx2);
+                    coverLogo.setImageResource(R.drawable.lendingx);
                     // coverLogo.setColorFilter(R.color.colorAccent);
                     // coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
                     break;
                 case "contract":
-                    coverLogo.setImageResource(R.drawable.contract);
+                    coverLogo.setImageResource(R.drawable.contractx);
                     //  coverLogo.setColorFilter(R.color.colorAccent);
                     //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
                     break;

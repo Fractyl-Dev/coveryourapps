@@ -83,7 +83,7 @@
                 android:layout_gravity="center"
                 android:layout_margin="4dp"
                 android:background="@drawable/rounded_button"
-                android:drawableStart="@drawable/contractx"
+                android:drawableStart="@drawable/contract"
                 android:drawablePadding="10dp"
                 android:onClick="agreementNewAgreementOnClick"
                 android:padding="8dp"
