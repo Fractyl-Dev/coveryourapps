@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String displayedFragment;
     private DrawerLayout drawerLayout;
     private NavigationView profileView;
-    private LinearLayout piButtonHolder;
     private FloatingActionButton floatingActionButton;
     private TextView nameTextView, displayNameTextView;
     private MenuItem profileHome, profileFriends, profileSettings, profileAbout;
@@ -92,8 +91,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View profileHeaderView = profileView.getHeaderView(0);
         nameTextView = (TextView) profileHeaderView.findViewById(R.id.nameTextView);
         displayNameTextView = (TextView) profileHeaderView.findViewById(R.id.displayNameTextView);
-        piButtonHolder = (LinearLayout) profileHeaderView.findViewById(R.id.piButtonLineHolder);
-        piButtonHolder.setBackgroundColor(Color.TRANSPARENT);
 
         Menu profileMenu = profileView.getMenu();
         profileHome = profileMenu.findItem(R.id.profile_home);
@@ -251,7 +248,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
         item.setChecked(true);
-        piButtonHolder.setBackgroundColor(Color.TRANSPARENT);
         drawerLayout.closeDrawer(GravityCompat.END);
 
         return true;
@@ -365,14 +361,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void setAboutFragment(Fragment aboutFragment) {
         this.aboutFragment = aboutFragment;
     }
-
-    //public Fragment getProfileInformationFragment() {
-       // return profileInformationFragment;
-    //}
-
-    //public void setProfileInformationFragment(Fragment profileInformationFragment) {
-    //    this.profileInformationFragment = profileInformationFragment;
-    //}
 
     public Fragment getReviewCoverFragment() {
         return reviewCoverFragment;
