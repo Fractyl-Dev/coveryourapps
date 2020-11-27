@@ -1,6 +1,8 @@
 package com.example.coveryourapps;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -10,11 +12,14 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,7 +64,7 @@ import static android.media.ExifInterface.TAG_ORIENTATION;
 public class LendItemFragment extends Fragment implements View.OnClickListener {
     CoverCreatorActvity thisActivity;//
     private EditText itemNameEditText, memoEditText;
-    private Button uploadImageButton, returnDateButton, continueButton;
+    private Button uploadImageButton, returnDateButton, continueButton, takeImageButton;
 
     private ArrayList<Uri> imageURLs;
     private RecyclerView imagesRecyclerView;
@@ -70,6 +75,9 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
 
     public static final int PICK_IMAGE = 1;
 
+    public static final int CAMERA_PERM_CODE = 101;
+    public static final int CAMERA_REQUEST_CODE = 102;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_lend_item, container, false);
@@ -78,8 +86,10 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
         itemNameEditText = view.findViewById(R.id.itemNameEditText);
         memoEditText = view.findViewById(R.id.memoEditText);
         uploadImageButton = view.findViewById(R.id.uploadImageButton);
+        takeImageButton = view.findViewById(R.id.takeImageButton);
         returnDateButton = view.findViewById(R.id.returnDateButton);
         continueButton = view.findViewById(R.id.continueButton);
+        takeImageButton.setOnClickListener((this));
         uploadImageButton.setOnClickListener(this);
         returnDateButton.setOnClickListener(this);
         continueButton.setOnClickListener(this);
@@ -101,6 +111,9 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.uploadImageButton:
                 uploadImage();
+                break;
+            case R.id.takeImageButton:
+                takeImage();
                 break;
             case R.id.returnDateButton:
                 getReturnDate();
@@ -195,8 +208,39 @@ public class LendItemFragment extends Fragment implements View.OnClickListener {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
     }
 
+    public void takeImage(){
+        askCameraPermissions();
+    }
+
+    private void askCameraPermissions() {
+        if(ContextCompat.checkSelfPermission(thisActivity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(thisActivity, new String[] {Manifest.permission.CAMERA}, CAMERA_PERM_CODE);
+                checkCamera();
+        }else{
+            openCamera();
+        }
+    }
+
+    private void checkCamera(){
+        if(ContextCompat.checkSelfPermission(thisActivity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(thisActivity, "Must Allow Camera to Take Photos", Toast.LENGTH_LONG).show();
+        }else{
+            openCamera();
+        }
+    }
+
+    private void openCamera(){
+        Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(camera,CAMERA_REQUEST_CODE);
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+       if(requestCode == CAMERA_REQUEST_CODE){
+           Bitmap image = (Bitmap) data.getExtras().get("data");
+       }
+
         if (requestCode == PICK_IMAGE) {
             if (data == null) {
                 Toast.makeText(thisActivity, "Image not able to be processed, please try again.", Toast.LENGTH_SHORT).show();

@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     AlertDialog dialog;
 
 
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         reviewCoverFragment = new ReviewCoverFragment();
 
         floatingActionButton = findViewById(R.id.agreementPopupMenu);
+
 
         //Top Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -202,6 +204,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         view = getLayoutInflater().inflate(R.layout.agreement_popup_menu_layout, null);
 
+       // floatingActionButton.addOnHideAnimationListener();
+
         //Dialog builder
         builder.setView(view);
         dialog = builder.create();// Creating the dialog object that pops up
@@ -218,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void closeAgreementPopupMenu(View view) {
         dialog.dismiss();
+        floatingActionButton.show();
     }
 
 
