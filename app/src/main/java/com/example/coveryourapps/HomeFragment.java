@@ -50,7 +50,6 @@ public class HomeFragment extends Fragment {
     private RecyclerView pendingCoversRecyclerView, confirmedCoversRecyclerView, expiredCoversRecyclerView;
     private ArrayList<Cover> pendingCovers, confirmedCovers, expiredCovers;
     private TextView pendingNoCoversTextView, confirmedNoCoversTextView, expiredNoCoversTextView;
-    private static FirebaseFirestore notificationsDB;
 
     private TextView pendingTitleTextView, confirmedTitleTextView, expiredTitleTextView;
 
@@ -269,17 +268,17 @@ public class HomeFragment extends Fragment {
             //ResourcesCompat.getDrawable(getResources(), R.drawable.check_icon, null) Is the real way to get resources
             switch (cover.getCoverType()) {
                 case "cash":
-                    coverLogo.setImageResource(R.drawable.cashx);
+//                    coverLogo.setImageResource(R.drawable.cashx);
                     // coverLogo.setColorFilter(R.color.colorAccent);
                     //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
                     break;
                 case "lending":
-                    coverLogo.setImageResource(R.drawable.lendingx);
+//                    coverLogo.setImageResource(R.drawable.lendingx);
                     // coverLogo.setColorFilter(R.color.colorAccent);
                     // coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
                     break;
                 case "contract":
-                    coverLogo.setImageResource(R.drawable.contractx);
+//                    coverLogo.setImageResource(R.drawable.contractx);
                     //  coverLogo.setColorFilter(R.color.colorAccent);
                     //coverLogo.setBackground(getResources().getDrawable(R.drawable.cover_cash_icon));
                     break;
@@ -339,7 +338,7 @@ public class HomeFragment extends Fragment {
                         updateMap.put("remind",cover.getDocID());
                         updateMap.put("time", new Timestamp(System.currentTimeMillis()));
 
-                        notificationsDB.collection("reminders")
+                        DBHandler.getDB().collection("reminders")
                                 .add(updateMap);
 
                         Toast.makeText(thisActivity, "Reminder Sent", Toast.LENGTH_SHORT).show();

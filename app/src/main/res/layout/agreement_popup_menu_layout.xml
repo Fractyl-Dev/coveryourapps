@@ -51,7 +51,6 @@
                 android:layout_gravity="center"
                 android:layout_margin="4dp"
                 android:background="@drawable/rounded_button"
-                android:drawableStart="@drawable/lending"
                 android:drawablePadding="10dp"
                 android:onClick="agreementLendAnItemOnClick"
                 android:padding="8dp"
@@ -67,7 +66,6 @@
                 android:layout_gravity="center"
                 android:layout_margin="4dp"
                 android:background="@drawable/rounded_button"
-                android:drawableStart="@drawable/cash"
                 android:drawablePadding="10dp"
                 android:onClick="agreementCashTransactionOnClick"
                 android:padding="8dp"
@@ -83,7 +81,6 @@
                 android:layout_gravity="center"
                 android:layout_margin="4dp"
                 android:background="@drawable/rounded_button"
-                android:drawableStart="@drawable/contract"
                 android:drawablePadding="10dp"
                 android:onClick="agreementNewAgreementOnClick"
                 android:padding="8dp"
@@ -93,6 +90,8 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
+<!--This is the code taken from the buttons, stephen's push fucked up and I took this out to wait for proper images-->
+<!--        android:drawableStart="@drawable/contract"-->
 
     </LinearLayout>
 

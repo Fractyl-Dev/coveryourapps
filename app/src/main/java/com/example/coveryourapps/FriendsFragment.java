@@ -10,6 +10,7 @@ import android.provider.Telephony;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -36,12 +37,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
-public class FriendsFragment extends Fragment {
+public class FriendsFragment extends Fragment implements View.OnClickListener {
     MainActivity thisActivity;
     RecyclerView friendsRecyclerView;
     EditText usernameSearch;
     ArrayList<User> yourFriends;
-    private Button inviteFriendsButton;
+    TextView noFriendsTextView;
+    Button inviteFriendsButton;
 
 
     @Nullable
@@ -50,21 +52,25 @@ public class FriendsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
         thisActivity = (MainActivity) getActivity();
 
+        noFriendsTextView = view.findViewById(R.id.noFriendsTextView);
         inviteFriendsButton = view.findViewById(R.id.inviteFriendsButton);
+        inviteFriendsButton.setOnClickListener(this);
         friendsRecyclerView = view.findViewById(R.id.friendsRecyclerView);
         usernameSearch = view.findViewById(R.id.usernameSearch);
-        usernameSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    performUsernameSearch(v.getText().toString());
-                    return true;
-                }
-                return false;
-            }
-        });
+        usernameSearch.setOnClickListener(this);
+//        usernameSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                Toast.makeText(thisActivity, "EEE", Toast.LENGTH_SHORT).show();
+//                if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//                    performUsernameSearch(v.getText().toString());
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
         friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         yourFriends = new ArrayList<>();
@@ -80,7 +86,14 @@ public class FriendsFragment extends Fragment {
             yourFriends.clear();
             yourFriends.addAll(DBHandler.getAllUserFriends());
 
-            friendsRecyclerView.setAdapter(new FriendsFragment.UsersAdapter(yourFriends));
+            if (yourFriends.isEmpty()) {
+                friendsRecyclerView.setVisibility(View.GONE);
+                noFriendsTextView.setVisibility(View.VISIBLE);
+            } else {
+                noFriendsTextView.setVisibility(View.GONE);
+                friendsRecyclerView.setVisibility(View.VISIBLE);
+                friendsRecyclerView.setAdapter(new FriendsFragment.UsersAdapter(yourFriends));
+            }
         }
     }
 
@@ -121,6 +134,44 @@ public class FriendsFragment extends Fragment {
         usernameSearch.setText("");
     }
 
+    private void sendSMS() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // At least KitKat
+        {
+            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(thisActivity); // Need to change the build to API 19
+
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.setType("text/plain");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "Download CYA Today: Add link ");
+
+            if (defaultSmsPackageName != null)// Can be null in case that there is no default, then the user would be able to choose
+            // any app that support this intent.
+            {
+                sendIntent.setPackage(defaultSmsPackageName);
+            }
+            startActivity(sendIntent);
+
+        } else // For early versions, do what worked for you before.
+        {
+            Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
+            smsIntent.setType("vnd.android-dir/mms-sms");
+            smsIntent.putExtra("address", "phoneNumber");
+            smsIntent.putExtra("sms_body", "Download CYA Today: Add link");
+            startActivity(smsIntent);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.usernameSearch:
+                thisActivity.changeFragmentLayover(thisActivity.getSearchFragment(), "searchFragment", true);
+                break;
+            case R.id.inviteFriendsButton:
+                sendSMS();
+                break;
+
+        }
+    }
 
     class UsersAdapter extends RecyclerView.Adapter<FriendsFragment.FriendViewHolder> {
         private ArrayList<User> yourFriends;
@@ -175,35 +226,8 @@ public class FriendsFragment extends Fragment {
             friendTrashButton.setOnClickListener(this);
             trashCheckButton.setOnClickListener(this);
             trashCancelButton.setOnClickListener(this);
-            inviteFriendsButton.setOnClickListener(this);
         }
 
-        private void sendSMS() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // At least KitKat
-            {
-                String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(thisActivity); // Need to change the build to API 19
-
-                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.setType("text/plain");
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "Download CYA Today: Add link ");
-
-                if (defaultSmsPackageName != null)// Can be null in case that there is no default, then the user would be able to choose
-                // any app that support this intent.
-                {
-                    sendIntent.setPackage(defaultSmsPackageName);
-                }
-                startActivity(sendIntent);
-
-            }
-            else // For early versions, do what worked for you before.
-            {
-                Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
-                smsIntent.setType("vnd.android-dir/mms-sms");
-                smsIntent.putExtra("address","phoneNumber");
-                smsIntent.putExtra("sms_body","Download CYA Today: Add link");
-                startActivity(smsIntent);
-            }
-        }
 
         @Override
         public void onClick(View v) {
@@ -222,9 +246,6 @@ public class FriendsFragment extends Fragment {
                 case R.id.trashCancelButton:
                     trashConfirmLayout.setVisibility(View.GONE);
                     trashButtonLayout.setVisibility(View.VISIBLE);
-                    break;
-                case R.id.inviteFriendsButton:
-                    sendSMS();
                     break;
             }
         }

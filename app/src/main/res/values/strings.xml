@@ -112,7 +112,6 @@
     <string name="no_expired_covers">No expired covers</string>
     <string name="add_friends_by_username">Add friends by username</string>
     <string name="item_name">Item Name</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="upload_image">Upload Image</string>
     <string name="return_date">Return Date</string>
@@ -126,6 +125,9 @@
     <string name="sign_out">Sign Out</string>
     <string name="auto_add_friends">Auto-Add Friends</string>
     <string name="when_checked_friends_will_be_automatically_added_to_your_friends_list_after_you_send_them_a_cover">When checked, friends will be automatically added to your friends list after you send them a cover</string>
+    <string name="search_someone">Search for someone</string>
+    <string name="search_results">Search Results</string>
+    <string name="no_search_results_found">No search results found</string>
 
 
 </resources>
