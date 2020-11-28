@@ -56,6 +56,14 @@ public class FriendsFragment extends Fragment implements View.OnClickListener {
         inviteFriendsButton = view.findViewById(R.id.inviteFriendsButton);
         inviteFriendsButton.setOnClickListener(this);
         friendsRecyclerView = view.findViewById(R.id.friendsRecyclerView);
+        friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        //Overriding gets rid of the weird animations within recyclerviews when you scroll
+        friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically(){
+                return false;
+            }
+        });
         usernameSearch = view.findViewById(R.id.usernameSearch);
         usernameSearch.setOnClickListener(this);
 //        usernameSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -71,7 +79,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener {
 //                return false;
 //            }
 //        });
-        friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         yourFriends = new ArrayList<>();
         updateFriendsUI();

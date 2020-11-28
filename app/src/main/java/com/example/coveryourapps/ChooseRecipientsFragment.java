@@ -55,18 +55,19 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
         yourFriendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         usernameSearch = view.findViewById(R.id.usernameSearch);
-        usernameSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    performUsernameSearch(v.getText().toString());
-                    return true;
-                }
-                return false;
-            }
-        });
+        usernameSearch.setOnClickListener(this);
+//        usernameSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//                    performUsernameSearch(v.getText().toString());
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
         selectedRecipientsInfo = view.findViewById(R.id.selectedRecipientsInfo);
         selectedRecipientsTextView = view.findViewById(R.id.selectedRecipientsTextView);
@@ -112,10 +113,13 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.usernameSearch:
+                thisActivity.changeCoverCreatorLayover(thisActivity.getSearchFragment(), "searchFragment");
+                break;
             case R.id.selectedRecipientsClearButton:
                 thisActivity.clearSelectedRecipients();
                 updateSelectedRecipientsUI();
-                Log.d("**Choose Recipients Fragment |", "Cleared selected recipients");
+                yourFriendsRecyclerView.setAdapter(new ChooseRecipientsFragment.UsersAdapter(yourFriends));
                 break;
             case R.id.inviteFriendsButton:
               sendSMS();
@@ -196,6 +200,11 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
             friendDisplayName.setText("@" + friend.getDisplayName());
 
             friendAddButton.setOnClickListener(this);
+
+            //Change its icon to be a trash if it's included as a recipient
+            if (thisActivity.getSelectedRecipients().contains(friend)) {
+                friendAddButton.setImageResource(R.drawable.trash_icon);
+            }
         }
 
         @Override
@@ -204,8 +213,12 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
                 //add Friend
                 if (!thisActivity.getSelectedRecipients().contains(friend)) {
                     thisActivity.addToSelectedRecipients(friend);
+                    friendAddButton.setImageResource(R.drawable.trash_icon);
                     updateSelectedRecipientsUI();
-                    Log.d("**Choose Recipients Fragment |", "Added FRIEND UID " + friend.getUid() + " to array. Array is now " + thisActivity.getSelectedRecipients().toString());
+                } else {
+                    thisActivity.getSelectedRecipients().remove(friend);
+                    friendAddButton.setImageResource(R.drawable.fab_plus);
+                    updateSelectedRecipientsUI();
                 }
             }
         }
@@ -258,14 +271,6 @@ public class ChooseRecipientsFragment extends Fragment implements View.OnClickLi
             for (User user : thisActivity.getSelectedRecipients()) {
                 userNamesToDisplay.add(user.getName());
             }
-            /*for (User user : thisActivity.getAllUsers()) {
-                for (String uid : thisActivity.getSelectedRecipients()) {
-                    if (user.getUid().contains(uid)) {
-                        User userToDisplay = user;
-                        userNamesToDisplay.add(userToDisplay.getName());
-                    }
-                }
-            }*/
             String userNamesToDisplayNoBrackets = userNamesToDisplay.toString().replace("[", "").replace("]", "");
             selectedRecipientsTextView.setText("Selected Recipients: " + userNamesToDisplayNoBrackets);
         }

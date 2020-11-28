@@ -49,6 +49,15 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         searchResultsRecyclerView = view.findViewById(R.id.searchResultsRecyclerView);
         searchResultsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        //Overriding gets rid of the weird animations within recyclerviews when you scroll
+        searchResultsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        });
+
         noResultsTextView = view.findViewById(R.id.noResultsTextView);
         backButton = view.findViewById(R.id.backButton);
         backButton.setOnClickListener(this);
@@ -126,6 +135,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             if (getContext() instanceof MainActivity)
                 thisMainActivity.goBack();
+            else
+                thisCCActivity.goBack();
             searchBar.setText("");
         }
     }
@@ -194,13 +205,19 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                     friendTrashButton.setImageResource(R.drawable.trash_icon);
                 }
 
+            } else {
+                if (thisCCActivity.getSelectedRecipients().contains(search)) {
+                    friendTrashButton.setImageResource(R.drawable.trash_icon);
+                } else {
+                    friendTrashButton.setImageResource(R.drawable.fab_plus);
+                }
             }
         }
 
 
         @Override
         public void onClick(View v) {
-            if (getContext() instanceof MainActivity)
+            if (getContext() instanceof MainActivity) {
                 switch (v.getId()) {
                     case R.id.friendTrashButton:
                         // If they are already a friend
@@ -230,6 +247,24 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                         trashButtonLayout.setVisibility(View.VISIBLE);
                         break;
                 }
+            } else {
+                switch (v.getId()) {
+                    case R.id.friendTrashButton:
+                        // If they are already selected
+                        if (thisCCActivity.getSelectedRecipients().contains(search)) {
+                            thisCCActivity.getSelectedRecipients().remove(search);
+                            friendTrashButton.setImageResource(R.drawable.fab_plus);
+//                            trashButtonLayout.setVisibility(View.GONE);
+//                            trashConfirmLayout.setVisibility(View.VISIBLE);
+//                            Toast.makeText(thisMainActivity, "Are you sure you want to remove " + search.getName() + " as a friend?", Toast.LENGTH_SHORT).show();
+                        } else {
+                            //Add search to selected
+                            thisCCActivity.getSelectedRecipients().add(search);
+                            friendTrashButton.setImageResource(R.drawable.trash_icon);
+                        }
+                        break;
+                }
+            }
         }
     }
 }

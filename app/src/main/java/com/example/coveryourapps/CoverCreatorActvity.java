@@ -27,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class CoverCreatorActvity extends AppCompatActivity implements View.OnClickListener {
@@ -34,6 +35,7 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
     private Fragment cashTransactionFragment, contractTemplateOverviewFragment, contractTemplateArgumentFragment, writeAContractFragment, lendItemFragment;
     private ChooseRecipientsFragment chooseRecipientsFragment;
     private ChooseContractFragment chooseContractFragment;
+    private SearchFragment searchFragment;
     private String displayedFragment;
     private String selectedCover;
 
@@ -43,7 +45,8 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
     private SwipeRefreshLayout swipeRefreshLayout;
 
 
-    private ArrayList<User> selectedRecipients = new ArrayList<>();
+//    private ArrayList<User> selectedRecipients = new ArrayList<>();
+    private HashSet<User> selectedRecipients;
 
     //Template variables
     private int contractTemplateArgumentsIteration;
@@ -65,8 +68,9 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
         contractTemplateArgumentFragment = new ContractTemplateArgumentFragment();
         writeAContractFragment = new WriteAContractFragment();
         lendItemFragment = new LendItemFragment();
+        searchFragment = new SearchFragment();
 
-        selectedRecipients = new ArrayList<>();
+        selectedRecipients = new HashSet<>();
 
         //Top Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -133,6 +137,11 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
         transaction.addToBackStack(null);
 
         transaction.commit();
+
+        if (displayedFragment.equals("searchFragment")) {
+            toolbarBackButton.setVisibility(View.GONE);
+            toolbarNextButton.setVisibility(View.GONE);
+        }
     }
 
 
@@ -169,7 +178,7 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
         this.writeAContractFragment = writeAContractFragment;
     }
 
-    public ArrayList<User> getSelectedRecipients() {
+    public HashSet<User> getSelectedRecipients() {
         return selectedRecipients;
     }
 
@@ -221,6 +230,10 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
         this.currentContractTemplate = currentContractTemplate;
     }
 
+    public Fragment getSearchFragment() {
+        return searchFragment;
+    }
+
     public void setToolbarTopText(String toolbarTopText) {
         this.toolbarTopText.setText(toolbarTopText);
     }
@@ -265,8 +278,9 @@ public class CoverCreatorActvity extends AppCompatActivity implements View.OnCli
 
             Intent nextIntent = new Intent(CoverCreatorActvity.this, MainActivity.class);
             startActivity(nextIntent);
-        } else if (displayedFragment.equals("chooseContractFragment") || displayedFragment.equals("cashTransactionFragment") || displayedFragment.equals("lendItemFragment")) {
+        } else if (displayedFragment.equals("chooseContractFragment") || displayedFragment.equals("cashTransactionFragment") || displayedFragment.equals("lendItemFragment") || displayedFragment.equals("searchFragment")) {
             toolbarTopText.setText(getString(R.string.add_people));
+            toolbarBackButton.setVisibility(View.VISIBLE);
             toolbarBackButton.setImageResource(R.drawable.close_icon);
             toolbarNextButton.setVisibility(View.VISIBLE);
             changeCoverCreatorLayover(chooseRecipientsFragment, "chooseRecipientsFragment");

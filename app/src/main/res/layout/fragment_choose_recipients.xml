@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="8dp"
         android:background="@android:color/transparent"
-        android:hint="@string/search_by_username_hint"
+        android:hint="@string/search_someone"
+        android:focusableInTouchMode="false"
         android:imeOptions="actionDone"
         android:inputType="text"
         android:maxLines="1"
@@ -30,35 +31,43 @@
         android:id="@+id/selectedRecipientsInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="start"
-        android:orientation="horizontal"
-        android:visibility="visible">
-
-        <TextView
-            android:id="@+id/selectedRecipientsTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="4dp"
-            android:text="@string/selected_recipients"
-            android:textColor="@android:color/black" />
+        android:visibility="gone"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="match_parent"
+            android:gravity="start"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/selectedRecipientsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:text="@string/selected_recipients"
+                android:textColor="@android:color/black" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
             android:gravity="end"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/selectedRecipientsClearButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@color/yourFriendsBackground"
+                android:padding="10dp"
                 android:text="@string/clear"
                 android:textAllCaps="false"
-                android:padding="10dp"
-                android:visibility="gone"
                 android:textColor="@android:color/black" />
         </LinearLayout>
     </LinearLayout>
@@ -103,7 +112,7 @@
         android:text="@string/you_don_t_have_any_friends"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/yourFriendsRecyclerView"
