@@ -49,6 +49,7 @@
                 android:layout_width="185dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:drawableStart="@drawable/lending"
                 android:layout_margin="4dp"
                 android:background="@drawable/rounded_button"
                 android:drawablePadding="10dp"
@@ -64,6 +65,7 @@
                 android:layout_width="185dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:drawableStart="@drawable/cash"
                 android:layout_margin="4dp"
                 android:background="@drawable/rounded_button"
                 android:drawablePadding="10dp"
@@ -77,6 +79,7 @@
             <Button
                 android:id="@+id/agreementNewAgreementButton"
                 android:layout_width="185dp"
+                android:drawableStart="@drawable/contract"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="4dp"
