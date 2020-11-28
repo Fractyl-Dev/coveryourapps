@@ -51,9 +51,9 @@ public class DBHandler extends Application {
     }
 
     private static ArrayList<Cover> allUserCovers;
-    private static ArrayList<User> allUserFriends;
+//    private static ArrayList<User> allUserFriends;
+    private static HashSet<User> allUserFriends;
     private static ArrayList<ContractTemplate> allContractTemplates;
-    //    private static Set<User> allUsers;
     private static HashSet<User> allUsers;
 
     private static FirebaseFirestore DB;
@@ -239,7 +239,7 @@ public class DBHandler extends Application {
 
     public static void refreshFriendsList() {
         friendsChecked = false;
-        allUserFriends = new ArrayList<>();
+        allUserFriends = new HashSet<>();
         if (currentUser.getFriends().size() != 0) {
             for (String friendUID : currentUser.getFriends()) {
                 DB.collection("users")
@@ -285,9 +285,11 @@ public class DBHandler extends Application {
                                 User user = usersSnapshot.toObject(User.class);
 
                                 allUsers.add(user);
+                                Log.e("**DB Handler |", user.getName() +" added as user");
                             }
                             Log.d("**DB Handler |", "AllUsersChecked to true");
                             allUsersChecked = true;
+
                         } else {
                             declareError();
                         }
@@ -383,12 +385,8 @@ public class DBHandler extends Application {
         DBHandler.allUserCovers = allUserCovers;
     }
 
-    public static ArrayList<User> getAllUserFriends() {
+    public static HashSet<User> getAllUserFriends() {
         return allUserFriends;
-    }
-
-    public static void setAllUserFriends(ArrayList<User> allUserFriends) {
-        DBHandler.allUserFriends = allUserFriends;
     }
 
     public static ArrayList<ContractTemplate> getAllContractTemplates() {

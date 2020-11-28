@@ -280,6 +280,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             profileView.setCheckedItem(R.id.profile_home);
         } else if (displayedFragment.equals("searchFragment")) {
             changeFragmentLayover(getFriendsFragment(), "friendsFragment", true);
+            profileView.setCheckedItem(R.id.profile_friends);
         }
     }
 
