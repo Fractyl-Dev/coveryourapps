@@ -57,6 +57,8 @@
                 android:background="@color/yourFriendsBackground"
                 android:text="@string/clear"
                 android:textAllCaps="false"
+                android:padding="10dp"
+                android:visibility="gone"
                 android:textColor="@android:color/black" />
         </LinearLayout>
     </LinearLayout>

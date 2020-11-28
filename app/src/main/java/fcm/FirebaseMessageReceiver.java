@@ -47,7 +47,7 @@ public class FirebaseMessageReceiver extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_ONE_SHOT);
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder builder=new NotificationCompat.Builder(getApplicationContext(),channel_id)
-            .setSmallIcon(R.drawable.check_icon)
+            .setSmallIcon(R.drawable.logo)
                 .setSound(uri)
                 .setAutoCancel(true)
                 .setVibrate(new long[]{1000,1000,1000,1000,1000})
@@ -60,7 +60,7 @@ public class FirebaseMessageReceiver extends FirebaseMessagingService {
         else{
             builder = builder.setContentTitle(title)
                     .setContentText(message)
-                    .setSmallIcon(R.drawable.check_icon);
+                    .setSmallIcon(R.drawable.logo);
         }
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
